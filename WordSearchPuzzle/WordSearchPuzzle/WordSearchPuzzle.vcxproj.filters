@@ -27,9 +27,6 @@
     <ClCompile Include="Image.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="Class.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WordSearchPuzzle.h">
@@ -39,9 +36,6 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="OCR.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Class.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

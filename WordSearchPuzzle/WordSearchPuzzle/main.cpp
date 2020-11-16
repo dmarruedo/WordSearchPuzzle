@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 			img_src = imread(argv[2], CV_LOAD_IMAGE_UNCHANGED);
 
 			//check the image source
-			if (img_src.empty()) throw String("the image " + string(argv[2]) + " cannot be loaded");
+			if (img_src.empty()) throw String("the image " + String(argv[2]) + " cannot be loaded");
 
 			loadTrainedOCR(argv[3], sample, response);
 		}

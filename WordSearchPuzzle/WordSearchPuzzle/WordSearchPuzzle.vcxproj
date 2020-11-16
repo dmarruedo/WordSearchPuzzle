@@ -155,14 +155,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Class.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OCR.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="WordSearchPuzzle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Class.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="OCR.h" />
     <ClInclude Include="WordSearchPuzzle.h" />
