@@ -2,7 +2,7 @@
 
 #include "OCR.h"
 #include "Image.h"
-#include <opencv\ml.h> //m
+#include "opencv2\ml.hpp" //m
 
 using namespace cv::ml; //m
 
