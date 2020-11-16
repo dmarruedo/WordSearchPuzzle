@@ -119,6 +119,18 @@ void saveTrainedOCR(String filename, Mat& sample, Mat& response)
 	cout << "samples and responses saved to " << filename << endl;
 }
 
+void trainOCR(string filename, Mat & sample, Mat & response)
+{
+}
+
+void loadTrainedOCR(string filename, Mat & sample, Mat & response)
+{
+}
+
+void saveTrainedOCR(string filename, Mat & sample, Mat & response)
+{
+}
+
 int getNumberOCR(Mat img, Ptr<KNearest> knn)
 {
 	// clone before finding the contours
