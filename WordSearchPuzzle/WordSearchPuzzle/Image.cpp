@@ -1,9 +1,4 @@
-/*
- * Image.cpp
- *
- *  Created on: 21 Oct 2015
- *      Author: guillaume
- */
+
 
 #include "Image.h"
 

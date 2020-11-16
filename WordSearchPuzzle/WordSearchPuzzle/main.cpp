@@ -1,9 +1,4 @@
-/*
- * main.cpp
- *
- *  Created on: 18 Oct 2015
- *      Author: guillaume
- */
+
 
 #include "opencv\cv.hpp"
 
