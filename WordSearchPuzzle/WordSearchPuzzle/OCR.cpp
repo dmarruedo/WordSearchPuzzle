@@ -2,6 +2,10 @@
 
 #include "OCR.h"
 #include "Image.h"
+#include <opencv2/ml.hpp> //m
+
+
+using namespace cv::ml; //m
 
 void trainOCR(String filename, Mat& sample, Mat& response)
 {
