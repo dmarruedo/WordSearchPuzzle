@@ -8,8 +8,8 @@
 #ifndef OCR_H_
 #define OCR_H_
 
-#include "opencv/cv.hpp"
-
+#include "opencv\cv.hpp"
+#include "opencv2\ml.hpp" //m
 
 
 using namespace std;

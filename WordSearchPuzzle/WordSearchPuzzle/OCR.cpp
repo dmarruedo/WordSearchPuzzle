@@ -2,7 +2,7 @@
 
 #include "OCR.h"
 #include "Image.h"
-#include <opencv\ml.h> //m
+#include "opencv2\ml.hpp" //m
 
 using namespace cv::ml; //m
 
@@ -117,6 +117,18 @@ void saveTrainedOCR(String filename, Mat& sample, Mat& response)
 	OCR.release();
 
 	cout << "samples and responses saved to " << filename << endl;
+}
+
+void trainOCR(string filename, Mat & sample, Mat & response)
+{
+}
+
+void loadTrainedOCR(string filename, Mat & sample, Mat & response)
+{
+}
+
+void saveTrainedOCR(string filename, Mat & sample, Mat & response)
+{
 }
 
 int getNumberOCR(Mat img, Ptr<KNearest> knn)
