@@ -16,3 +16,4 @@ using namespace std;
 using namespace cv;
 using namespace cv::ml;
 
+#endif /* OCR_H_ */

@@ -5,8 +5,8 @@
  *      Author: guillaume
  */
 
-#ifndef SUDOKU_H_
-#define SUDOKU_H_
+#ifndef WORDSEARCHPUZZLE_H_
+#define WORDSEARCHPUZZLE_H_
 
 #include <iostream>
 #include <string>
@@ -15,5 +15,5 @@
 
 using namespace std;
 
-
+#endif /* WORDSEARCHPUZZLE_H_ */
 
