@@ -82,11 +82,15 @@ int main(int argc, char *argv[])
 	Mat dst, cdst, contorno;
 
 	Canny(AT72, dst, 50, 200, 3);
-
+	imshow("edges", dst);
+	waitKey(0);
 	// Copy edges to the images that will display the results in BGR
+	// Para qué sirve esto? Por qué no almacenar directamente, sirve para algo la clonación?
 	cvtColor(dst, cdst, COLOR_GRAY2BGR);
 	contorno = cdst.clone();
 
+	imshow("contorno", contorno);
+	waitKey(0);
 	// Standard Hough Line Transform
 	vector<Vec2f> lines; // will hold the results of the detection
 	HoughLines(dst, lines, 1, CV_PI / 180, 150, 0, 0); // runs the actual detection
