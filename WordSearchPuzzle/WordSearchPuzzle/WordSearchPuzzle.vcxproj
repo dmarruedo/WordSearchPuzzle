@@ -158,6 +158,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OCR.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="ParameterSearch.cpp" />
     <ClCompile Include="WordSearchPuzzle.cpp" />
   </ItemGroup>
   <ItemGroup>
