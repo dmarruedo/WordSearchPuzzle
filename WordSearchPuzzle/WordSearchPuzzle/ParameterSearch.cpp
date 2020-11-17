@@ -14,8 +14,10 @@ int main(int argc, char *argv[])
 {
 	// Read the image file
 	Mat image = imread("images/WordSearch.jpg", CV_8UC1);
+	Mat image1 = imread("images/WordSearch1.jpg", CV_8UC1);
+	Mat image2 = imread("images/WordSearch2.jpg", CV_8UC1);
 	// Check for failure
-	if (image.empty())
+	if (image.empty() || image1.empty() || image2.empty())
 	{
 		cout << "Could not open or find the image" << endl;
 		cin.get(); //wait for any key press
@@ -24,8 +26,12 @@ int main(int argc, char *argv[])
 
 
 	//Blur the image with 3x3 Gaussian kernel
-	Mat image_blurred_with_3x3_kernel;
-	GaussianBlur(image, image_blurred_with_3x3_kernel, Size(3, 3), 0);
+	Mat imageB;
+	Mat imageB1;
+	Mat imageB2;
+	GaussianBlur(image, imageB, Size(3, 3), 0);
+	GaussianBlur(image, imageB1, Size(3, 3), 0);
+	GaussianBlur(image, imageB2, Size(3, 3), 0);
 
 	//Blur the image with 5x5 Gaussian kernel
 	//Mat image_blurred_with_5x5_kernel;
@@ -38,37 +44,54 @@ int main(int argc, char *argv[])
 
 
 
-	Mat AT152;
-	Mat AT132;
-	Mat AT112;
-	Mat AT92;
-	Mat AT72;
-
-
+	Mat imageAT;
+	Mat imageAT1;
+	Mat imageAT2;
+	
+	vector <Mat> imagevector;
+	vector <Mat> image1vector;
+	vector <Mat> image2vector;
 	//BLOCK SIZE MÍNIMO 11 (de 11 a 15 va bien)
 	//C MÍNIMO 3 (de 3 a 5 se comporta bien)
-	adaptiveThreshold(image_blurred_with_3x3_kernel, AT152, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 4);
-	adaptiveThreshold(image_blurred_with_3x3_kernel, AT132, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 3);
-	adaptiveThreshold(image_blurred_with_3x3_kernel, AT112, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 2);
-	adaptiveThreshold(image_blurred_with_3x3_kernel, AT92, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 1);
-	adaptiveThreshold(image_blurred_with_3x3_kernel, AT72, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 5);
+	int j;
+	int count = 3;
+	int bs = 10;
+	int c = 3;
+	for (j = 1; j < count; j++){
 
-	Mat dst, cdst, contorno;
+			adaptiveThreshold(imageB, imageAT, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, bs + j, c);
+			imagevector.push_back(imageAT);
 
-	Canny(AT72, dst, 50, 200, 3);
-	imshow("edges", dst);
-	waitKey(0);
-	// Copy edges to the images that will display the results in BGR
-	// Para qué sirve esto? Por qué no almacenar directamente, sirve para algo la clonación?
+			adaptiveThreshold(imageB, imageAT1, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, bs + j, c);
+			image1vector.push_back(imageAT1);
+
+			adaptiveThreshold(imageB, imageAT2, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, bs + j, c);
+			image2vector.push_back(imageAT2);
+	
+			Mat dst, dst1, dst2;
+			Mat cdst, cdst1, cdst2;
+			Mat contorno, contorno1, contorno2;
+
+	Canny(imageAT, dst, 50, 200, 3);
+	Canny(imageAT1, dst1, 50, 200, 3);
+	Canny(imageAT2, dst2, 50, 200, 3);
+
+
 	cvtColor(dst, cdst, COLOR_GRAY2BGR);
+	cvtColor(dst1, cdst1, COLOR_GRAY2BGR);
+	cvtColor(dst2, cdst2, COLOR_GRAY2BGR);
+	
 	contorno = cdst.clone();
+	contorno1 = cdst1.clone();
+	contorno2 = cdst2.clone();
 
-	imshow("contorno", contorno);
-	waitKey(0);
 	// Standard Hough Line Transform
 	vector<Vec2f> lines; // will hold the results of the detection
+	vector<Vec2f> lines1;
+	vector<Vec2f> lines2;
 	HoughLines(dst, lines, 1, CV_PI / 180, 150, 0, 0); // runs the actual detection
-
+	HoughLines(dst1, lines1, 1, CV_PI / 180, 150, 0, 0); // runs the actual detection
+	HoughLines(dst2, lines2, 1, CV_PI / 180, 150, 0, 0); // runs the actual detection
 	// Draw the lines
 	for (size_t i = 0; i < lines.size(); i++)
 	{
@@ -82,24 +105,61 @@ int main(int argc, char *argv[])
 		pt2.y = cvRound(y0 - 1000 * (a));
 		line(cdst, pt1, pt2, Scalar(0, 0, 255), 1, LINE_AA);
 	}
+	for (size_t i = 0; i < lines1.size(); i++)
+	{
+		float rho = lines1[i][0], theta = lines1[i][1];
+		Point pt1, pt2;
+		double a = cos(theta), b = sin(theta);
+		double x0 = a * rho, y0 = b * rho;
+		pt1.x = cvRound(x0 + 1000 * (-b));
+		pt1.y = cvRound(y0 + 1000 * (a));
+		pt2.x = cvRound(x0 - 1000 * (-b));
+		pt2.y = cvRound(y0 - 1000 * (a));
+		line(cdst1, pt1, pt2, Scalar(0, 0, 255), 1, LINE_AA);
+	}
+	for (size_t i = 0; i < lines2.size(); i++)
+	{
+		float rho = lines2[i][0], theta = lines2[i][1];
+		Point pt1, pt2;
+		double a = cos(theta), b = sin(theta);
+		double x0 = a * rho, y0 = b * rho;
+		pt1.x = cvRound(x0 + 1000 * (-b));
+		pt1.y = cvRound(y0 + 1000 * (a));
+		pt2.x = cvRound(x0 - 1000 * (-b));
+		pt2.y = cvRound(y0 - 1000 * (a));
+		line(cdst2, pt1, pt2, Scalar(0, 0, 255), 1, LINE_AA);
+	}
 	// Probabilistic Line Transform
 	vector<Vec4i> linesP; // will hold the results of the detection
+	vector<Vec4i> linesP1;
+	vector<Vec4i> linesP2;
 	HoughLinesP(dst, linesP, 1, CV_PI / 180, 50, 50, 10); // runs the actual detection
-
+	HoughLinesP(dst1, linesP1, 1, CV_PI / 180, 50, 50, 10);
+	HoughLinesP(dst2, linesP2, 1, CV_PI / 180, 50, 50, 10);
 	// Draw the lines
 	for (size_t i = 0; i < linesP.size(); i++)
 	{
 		Vec4i l = linesP[i];
 		line(contorno, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255, 0, 0), 5, LINE_AA);
 	}
+	for (size_t i = 0; i < linesP1.size(); i++)
+	{
+		Vec4i l = linesP1[i];
+		line(contorno1, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255, 0, 0), 5, LINE_AA);
+	}
+	for (size_t i = 0; i < linesP2.size(); i++)
+	{
+		Vec4i l = linesP2[i];
+		line(contorno2, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255, 0, 0), 5, LINE_AA);
+	}
 
-	imshow("Original", image);
-	imshow("Threshold_Origen", AT72); //Poner la imagen Threshold con mejor contorno
 	imshow("Contorno", contorno);
+	imshow("Contorno 1", contorno1);
+	imshow("Contorno 2", contorno2);
 
 	waitKey(0);
 	destroyAllWindows();
-
+}
 
 	return 0;
 
