@@ -13,7 +13,7 @@ using namespace cv::ml;
 int main(int argc, char *argv[])
 {
 	// Read the image file
-	Mat image = imread("images/WordSearch.jpg");
+	Mat image = imread("images/WordSearch.jpg", CV_8UC1);
 	// Check for failure
 	if (image.empty())
 	{
@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
 	imshow(window_name_blurred_with_3x3_kernel, image_blurred_with_3x3_kernel);
 	imshow(window_name_blurred_with_5x5_kernel, image_blurred_with_5x5_kernel);
 
-	waitKey(0); // Wait for any keystroke in the window
+	waitKey(0);
 
 	destroyAllWindows(); //destroy all opened windows
 
 	Mat imgAdaptiveThreshold;
 
-	adaptiveThreshold(image_blurred_with_5x5_kernel,  imgAdaptiveThreshold, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
+	adaptiveThreshold(image_blurred_with_3x3_kernel,  imgAdaptiveThreshold, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
 
 	namedWindow(window_name);
 	imshow(window_name, imgAdaptiveThreshold);
