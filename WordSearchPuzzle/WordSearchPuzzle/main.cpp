@@ -49,6 +49,16 @@ int main(int argc, char *argv[])
 
 	destroyAllWindows(); //destroy all opened windows
 
+	Mat imgAdaptiveThreshold;
+
+	adaptiveThreshold(image_blurred_with_5x5_kernel,  imgAdaptiveThreshold, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
+
+	namedWindow(window_name);
+	imshow(window_name, imgAdaptiveThreshold);
+	waitKey(0);
+	destroyAllWindows();
+
+
 	return 0;
 }
 
