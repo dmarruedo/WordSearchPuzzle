@@ -34,7 +34,7 @@ void clockwiseOrderVertix(int p, vector<vector<Point> > contours, Point2f* verti
 	double prevsum;
 
 	int top_right; int bottom_left; int bottom_right; int top_left;
-	// codigo para asignar los vertrices encontrados del cuadrado exterior a su posicion en el plano (top-Left , top_right , bottom_right , bottom_left)
+	// codigo para asignar los vertices encontrados del cuadrado exterior a su posicion en el plano (top-Left , top_right , bottom_right , bottom_left)
 	prevsum = contours[p][0].x + contours[p][0].y;
 	bottom_right = 0;
 	for (int i = 0; i < 4; i++)
@@ -115,10 +115,10 @@ int main(int argc, char *argv[])
 	//Codigo para aplicacion de filtro binario
 	adaptiveThreshold(processedImage, processedImage, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 5, 10);
 
-	//Codigo para inveritir colores bianrios 
+	//Codigo para invertir colores binarios 
 	bitwise_not(processedImage, processedImage);
 
-	// Codigo para dilatar o erosional la imagen binaria, no parece necesario de momento pero dejo el codigo por si acaso
+	// Codigo para dilatar o erosionar la imagen binaria, no parece necesario de momento pero dejo el codigo por si acaso
 	/*
 	Mat kernel
 	kernel = getStructuringElement(MORPH_CROSS, Size(1, 1));
@@ -191,6 +191,7 @@ int main(int argc, char *argv[])
 
 	// Se pintan en startImg los dos contornos de mayor area encontrados , en teoria el cuadrado exterior y el cuadrado de una de las celdas , primero se pone a color la imagen, el treshold la pasa a formato binario (negro, blanco)
 	cvtColor(startImg, startImg, COLOR_GRAY2BGR);
+
 	drawContours(startImg, contours, p1, Scalar(255, 0, 0), 1, 8);
 	drawContours(startImg, contours, p2, Scalar(255, 0, 0), 1, 8);
 
@@ -206,7 +207,7 @@ int main(int argc, char *argv[])
 
 	Point2f outSquarePoints[4];
 
-	// Funcion definida debajo de main para ordenar los extremos del contorno de la sopa de letras en sentido horario , es necesario para calcular la altura y ancho y tambien para adpatar la perpectiva (si no podria quedar girada o desconfirgurada)
+	// Funcion definida debajo de main para ordenar los extremos del contorno de la sopa de letras en sentido horario , es necesario para calcular la altura y ancho y tambien para adaptar la perpectiva (si no podria quedar girada o desconfirgurada)
 	// outSquarePoints es el vector con las esquinas ordenadas
 	clockwiseOrderVertix(p1, contours, outSquarePoints);
 
@@ -256,7 +257,7 @@ int main(int argc, char *argv[])
 	int resol = rows * cols * 5;
 
 
-	// Se define las posiciones de la imangen de los cornes para luego reposicionarla en perpectiva
+	// Se define las posiciones de la imagen de los corners para luego reposicionarla en perpectiva
 	Point2f perpectivePoints[4];
 
 	perpectivePoints[0] = Point2f(0, 0);		// top_left
@@ -267,7 +268,7 @@ int main(int argc, char *argv[])
 	Mat wrap;
 	Mat perpectiveImage;
 
-	//Se reposiciona la imagen dentro del controno en una imagen de resol x resol px
+	//Se reposiciona la imagen dentro del contorno en una imagen de resol x resol px
 	perpectiveImage = Mat::zeros(OriginalImage.size(), OriginalImage.type());
 	wrap = getPerspectiveTransform(outSquarePoints, perpectivePoints);
 	warpPerspective(OriginalImage, perpectiveImage, wrap, Size(resol, resol));
@@ -282,7 +283,7 @@ int main(int argc, char *argv[])
 
 
 	//codigo para extrar las celdas de la imagen en perpectiva correcta, creo que los for estan bien pero al ser la imagen cuadra no lo se, pueden que estan confundidas filas y columnas
-
+	//El orden de salida es fila a fila de izquierda a derecha y de arriba a abajo.
 	double cellWidth = resol / cols;
 	double celdlength = resol / rows;
 	Mat cellImage;
