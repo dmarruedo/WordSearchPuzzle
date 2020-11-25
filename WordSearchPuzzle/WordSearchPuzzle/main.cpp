@@ -17,6 +17,8 @@ using namespace cv;
 using namespace std;
 
 
+const bool SHOWIMAGE = false;
+
 // Esta funcion esta en el codigo, no consigo que en el argumento vector vertices llegue con mas de una posicion... y no lo entiendo ahi lo dejo 
 // Es para calcular la altura y anchura de los contornos
 void calculateDimensions(double heigth, double width, Point2f vertices[])
@@ -124,11 +126,11 @@ public:
 };
 
 //FUNCION PARA IDENTIFICAR LAS LETRAS
-void OCR(string image) {
+char OCR(string image) {
 	vector<ContourWithData> allContoursWithData;           // declare empty vectors,
 	vector<ContourWithData> validContoursWithData;         // we will fill these shortly
 
-																
+	
 
 	Mat matClassificationInts;      // we will read the classification numbers into this variable as though it is a vector
 
@@ -231,19 +233,24 @@ void OCR(string image) {
 		float fltCurrentChar = (float)matCurrentChar.at<float>(0, 0);
 
 		strFinalString = strFinalString + char(int(fltCurrentChar));        // append current char to full string
+
 	}
 
 	cout << "\n\n" << "numbers read = " << strFinalString << "\n\n";       // show the full string
 
-	imshow("matTestingNumbers", matTestingNumbers);     // show input image with green boxes drawn around found digits
+	if (SHOWIMAGE)
+	{
+		imshow("matTestingNumbers", matTestingNumbers);     // show input image with green boxes drawn around found digits
 
-	waitKey(0);                                         // wait for user key press
+		waitKey(0);
+		// wait for user key press
+	}
 
-	
+	return strFinalString[0];
 }
 
-const bool SHOWIMAGE = true;
-const String IMGDIR = "images/WordSearch2.jpg";
+
+const String IMGDIR = "images/WordSearch1.jpg";
 //#define const String imgDir = "images/WordSearch1.jpg";
 
 int main(int argc, char *argv[])
@@ -442,6 +449,10 @@ int main(int argc, char *argv[])
 	Mat cellImage;
 	vector<vector<Mat>> arrayCells;
 	int m = 0; int n;
+	char caracter;
+
+	vector<vector<char>> sopaLetras;
+	vector<char> fila;
 	for (m = 0; m < resol; m = m + cellWidth)
 	{
 		for (n = 0; n < resol; n = n + celdlength)
@@ -454,13 +465,17 @@ int main(int argc, char *argv[])
 				namedWindow("Celda", CV_WINDOW_AUTOSIZE);
 				imshow("Celda", cellImage);
 				imwrite("Celdas/Celda.jpg", cellImage); //aqui da error si la imagen no está guardada asi que puse esto, que va guardando y sobrescribiendo la misma imagen con las diferentes celdas
-				OCR("Celdas/Celda.jpg");
-				waitKey(0);
+ 				
+ 				waitKey(0);
 				destroyAllWindows();
 			}
+			imwrite("Celdas/Celda.jpg", cellImage);
+			caracter = OCR("Celdas/Celda.jpg");
+			fila.push_back(caracter);
 
 		}
-	}
+		sopaLetras.push_back(fila);
+ 	}
 
 	return 1;
 }
