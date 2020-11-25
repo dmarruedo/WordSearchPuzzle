@@ -236,10 +236,11 @@ char OCR(string image) {
 
 	}
 
-	cout << "\n\n" << "numbers read = " << strFinalString << "\n\n";       // show the full string
-
+	
 	if (SHOWIMAGE)
 	{
+		cout << "\n\n" << "numbers read = " << strFinalString << "\n\n";       // show the full string
+
 		imshow("matTestingNumbers", matTestingNumbers);     // show input image with green boxes drawn around found digits
 
 		waitKey(0);
@@ -255,7 +256,7 @@ const String IMGDIR = "images/WordSearch1.jpg";
 
 int main(int argc, char *argv[])
 {
-	
+
 	Mat OriginalImage = imread(IMGDIR, 0);
 
 	if (SHOWIMAGE)
@@ -288,7 +289,7 @@ int main(int argc, char *argv[])
 	erode(processedImage, processedImage, kernel);
 	*/
 
-	
+
 	if (SHOWIMAGE)
 	{
 		namedWindow("Processed", CV_WINDOW_AUTOSIZE);
@@ -457,7 +458,7 @@ int main(int argc, char *argv[])
 	{
 		for (n = 0; n < resol; n = n + celdlength)
 		{
-			cellImage = Mat(perpectiveImage, Rect(n+25, m+25, cellWidth-50, celdlength-50));
+			cellImage = Mat(perpectiveImage, Rect(n + 25, m + 25, cellWidth - 50, celdlength - 50));
 			// arrayCells[m][n] = cellImage;  Lo comento porque peta en ejecucion
 
 			if (SHOWIMAGE)
@@ -465,8 +466,8 @@ int main(int argc, char *argv[])
 				namedWindow("Celda", CV_WINDOW_AUTOSIZE);
 				imshow("Celda", cellImage);
 				imwrite("Celdas/Celda.jpg", cellImage); //aqui da error si la imagen no está guardada asi que puse esto, que va guardando y sobrescribiendo la misma imagen con las diferentes celdas
- 				
- 				waitKey(0);
+
+				waitKey(0);
 				destroyAllWindows();
 			}
 			imwrite("Celdas/Celda.jpg", cellImage);
@@ -475,7 +476,17 @@ int main(int argc, char *argv[])
 
 		}
 		sopaLetras.push_back(fila);
- 	}
+		fila.clear();
+	}
+
+	
+	for (auto fila = 0; fila < sopaLetras.size() ; fila ++) {
+		for (int celda = 0; celda < sopaLetras[fila].size();  celda++) {
+			cout << sopaLetras[fila][celda] << " " ;
+			
+		} 
+		cout << "\n";
+	}
 
 	return 1;
 }
