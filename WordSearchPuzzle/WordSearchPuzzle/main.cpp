@@ -3,6 +3,14 @@
 
 #include <iostream>
 #include "opencv\cv.hpp"
+#include<sstream>
+
+#include<opencv2/core/core.hpp>
+#include<opencv2/highgui/highgui.hpp>
+#include<opencv2/imgproc/imgproc.hpp>
+#include<opencv2/ml/ml.hpp>
+
+
 
 
 using namespace cv;
@@ -89,13 +97,158 @@ void clockwiseOrderVertix(int p, vector<vector<Point> > contours, Point2f* verti
 }
 
 
+
+// variables globales
+const int MIN_CONTOUR_AREA = 100;
+
+const int RESIZED_IMAGE_WIDTH = 20;
+const int RESIZED_IMAGE_HEIGHT = 30;
+
+
+class ContourWithData {
+public:
+	
+	vector<Point> ptContour;					// contour
+	Rect boundingRect;							// bounding rect for contour
+	float fltArea;                              // area of contour
+									
+	bool checkIfContourIsValid() {                              // obviously in a production grade program
+		if (fltArea < MIN_CONTOUR_AREA) return false;           // we would have a much more robust function for 
+		return true;                                            // identifying if a contour is valid !!
+	}
+
+	static bool sortByBoundingRectXPosition(const ContourWithData& cwdLeft, const ContourWithData& cwdRight) {      // this function allows us to sort
+		return(cwdLeft.boundingRect.x < cwdRight.boundingRect.x);                                                   // the contours from left to right
+	}
+
+};
+
+//FUNCION PARA IDENTIFICAR LAS LETRAS
+void OCR(string image) {
+	vector<ContourWithData> allContoursWithData;           // declare empty vectors,
+	vector<ContourWithData> validContoursWithData;         // we will fill these shortly
+
+																
+
+	Mat matClassificationInts;      // we will read the classification numbers into this variable as though it is a vector
+
+	FileStorage fsClassifications("images/classifications.xml", FileStorage::READ);        // open the classifications file
+		
+	if (fsClassifications.isOpened() == false) {														// if the file was not opened successfully
+		cout << "error, unable to open training classifications file, exiting program\n\n";				// show error message
+		//return(0);																					// and exit program
+	}
+
+	fsClassifications["classifications"] >> matClassificationInts;      // read classifications section into Mat classifications variable
+	fsClassifications.release();                                        // close the classifications file
+
+																		// read in training images ////////////////////////////////////////////////////////////
+
+	Mat matTrainingImagesAsFlattenedFloats;								// we will read multiple images into this single image variable as though it is a vector
+
+	FileStorage fsTrainingImages("images/images.xml", FileStorage::READ);          // open the training images file
+
+	if (fsTrainingImages.isOpened() == false) {                                                 // if the file was not opened successfully
+		cout << "error, unable to open training images file, exiting program\n\n";				// show error message
+	}
+
+	fsTrainingImages["images"] >> matTrainingImagesAsFlattenedFloats;           // read images section into Mat training images variable
+	fsTrainingImages.release();                                                 // close the traning images file
+
+																				// train //////////////////////////////////////////////////////////////////////////////
+
+	Ptr<cv::ml::KNearest>  kNearest(cv::ml::KNearest::create());				// instantiate the KNN object
+
+																				// finally we get to the call to train, note that both parameters have to be of type Mat (a single Mat)
+																				// even though in reality they are multiple images / numbers
+
+	kNearest->train(matTrainingImagesAsFlattenedFloats, cv::ml::ROW_SAMPLE, matClassificationInts);
+
+	// TEST
+
+	Mat matTestingNumbers = imread(image);            // read in the test numbers image
+
+	if (matTestingNumbers.empty()) {                                // if unable to open image
+		cout << "error: image not read from file\n\n";				// show error message on command line
+	                                                 
+	}
+
+	Mat matGrayscale;           //
+	Mat matBlurred;             // declare more image variables
+	Mat matThresh;              //
+	Mat matThreshCopy;          //
+
+	cvtColor(matTestingNumbers, matGrayscale, CV_BGR2GRAY);       
+
+	GaussianBlur(matGrayscale, matBlurred, Size(5, 5), 0);                        
+
+								   
+	adaptiveThreshold(matBlurred, matThresh, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 11, 2);                                   
+
+	matThreshCopy = matThresh.clone();              // make a copy of the thresh image, this in necessary b/c findContours modifies the image
+
+	vector<vector<Point> > ptContours;				// declare a vector for the contours
+	vector<Vec4i> v4iHierarchy;                     // declare a vector for the hierarchy (we won't use this in this program but this may be helpful for reference)
+
+	findContours(matThreshCopy, v4iHierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); 
+
+	for (int i = 0; i < ptContours.size(); i++) {											// for each contour
+		ContourWithData contourWithData;                                                    // instantiate a contour with data object
+		contourWithData.ptContour = ptContours[i];                                          // assign contour to contour with data
+		contourWithData.boundingRect = cv::boundingRect(contourWithData.ptContour);         // get the bounding rect
+		contourWithData.fltArea = contourArea(contourWithData.ptContour);					// calculate the contour area
+		allContoursWithData.push_back(contourWithData);                                     // add contour with data object to list of all contours with data
+	}
+
+	for (int i = 0; i < allContoursWithData.size(); i++) {                      // for all contours
+		if (allContoursWithData[i].checkIfContourIsValid()) {                   // check if valid
+			validContoursWithData.push_back(allContoursWithData[i]);            // if so, append to valid contour list
+		}
+	}
+	// sort contours from left to right
+	sort(validContoursWithData.begin(), validContoursWithData.end(), ContourWithData::sortByBoundingRectXPosition);
+
+	string strFinalString;         // declare final string, this will have the final number sequence by the end of the program
+
+	for (int i = 0; i < validContoursWithData.size(); i++) {            // for each contour
+												
+		rectangle(matTestingNumbers, validContoursWithData[i].boundingRect, Scalar(0, 255, 0), 2); 
+
+		Mat matROI = matThresh(validContoursWithData[i].boundingRect);          // get ROI image of bounding rect
+
+		Mat matROIResized;
+		resize(matROI, matROIResized, Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));     // resize image, this will be more consistent for recognition and storage
+
+		Mat matROIFloat;
+		matROIResized.convertTo(matROIFloat, CV_32FC1);             // convert Mat to float, necessary for call to find_nearest
+
+		Mat matROIFlattenedFloat = matROIFloat.reshape(1, 1);
+
+		Mat matCurrentChar(0, 0, CV_32F);
+
+		kNearest->findNearest(matROIFlattenedFloat, 1, matCurrentChar);     // finally we can call find_nearest !!!
+
+		float fltCurrentChar = (float)matCurrentChar.at<float>(0, 0);
+
+		strFinalString = strFinalString + char(int(fltCurrentChar));        // append current char to full string
+	}
+
+	cout << "\n\n" << "numbers read = " << strFinalString << "\n\n";       // show the full string
+
+	imshow("matTestingNumbers", matTestingNumbers);     // show input image with green boxes drawn around found digits
+
+	waitKey(0);                                         // wait for user key press
+
+	
+}
+
 const bool SHOWIMAGE = true;
 const String IMGDIR = "images/WordSearch.jpg";
 //#define const String imgDir = "images/WordSearch1.jpg";
 
 int main(int argc, char *argv[])
 {
-
+	
 	Mat OriginalImage = imread(IMGDIR, 0);
 
 	if (SHOWIMAGE)
@@ -128,7 +281,7 @@ int main(int argc, char *argv[])
 	erode(processedImage, processedImage, kernel);
 	*/
 
-
+	
 	if (SHOWIMAGE)
 	{
 		namedWindow("Processed", CV_WINDOW_AUTOSIZE);
@@ -293,13 +446,15 @@ int main(int argc, char *argv[])
 	{
 		for (n = 0; n < resol; n = n + celdlength)
 		{
-			cellImage = Mat(perpectiveImage, Rect(n, m, cellWidth, celdlength));
+			cellImage = Mat(perpectiveImage, Rect(n+25, m+25, cellWidth-50, celdlength-50));
 			// arrayCells[m][n] = cellImage;  Lo comento porque peta en ejecucion
 
 			if (SHOWIMAGE)
 			{
 				namedWindow("Celda", CV_WINDOW_AUTOSIZE);
 				imshow("Celda", cellImage);
+				imwrite("Celdas/Celda.jpg", cellImage); //aqui da error si la imagen no está guardada asi que puse esto, que va guardando y sobrescribiendo la misma imagen con las diferentes celdas
+				OCR("Celdas/Celda.jpg");
 				waitKey(0);
 				destroyAllWindows();
 			}
