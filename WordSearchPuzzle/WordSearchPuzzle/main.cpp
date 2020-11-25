@@ -190,9 +190,9 @@ void OCR(string image) {
 	vector<vector<Point> > ptContours;				// declare a vector for the contours
 	vector<Vec4i> v4iHierarchy;                     // declare a vector for the hierarchy (we won't use this in this program but this may be helpful for reference)
 
-	findContours(matThreshCopy, v4iHierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); 
+	findContours(matThreshCopy, ptContours, v4iHierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-	for (int i = 0; i < ptContours.size(); i++) {											// for each contour
+	for (int i = 0; i < ptContours.size(); i++) {			 								// for each contour
 		ContourWithData contourWithData;                                                    // instantiate a contour with data object
 		contourWithData.ptContour = ptContours[i];                                          // assign contour to contour with data
 		contourWithData.boundingRect = cv::boundingRect(contourWithData.ptContour);         // get the bounding rect
