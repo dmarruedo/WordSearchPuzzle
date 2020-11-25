@@ -243,7 +243,7 @@ void OCR(string image) {
 }
 
 const bool SHOWIMAGE = true;
-const String IMGDIR = "images/WordSearch.jpg";
+const String IMGDIR = "images/WordSearch2.jpg";
 //#define const String imgDir = "images/WordSearch1.jpg";
 
 int main(int argc, char *argv[])
