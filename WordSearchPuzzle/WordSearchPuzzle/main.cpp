@@ -436,7 +436,7 @@ int main(int argc, char *argv[])
 
 	if (SHOWIMAGE)
 	{
-		namedWindow("perpectiva", CV_WINDOW_AUTOSIZE);
+		namedWindow("perspectiva", CV_WINDOW_AUTOSIZE);
 		imshow("perspectiva", perpectiveImage);
 		waitKey(0);
 		destroyAllWindows();
