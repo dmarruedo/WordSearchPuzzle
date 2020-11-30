@@ -7,9 +7,6 @@
 #include<opencv2/imgproc/imgproc.hpp>
 #include<opencv2/ml/ml.hpp>
 
-
-
-
 using namespace cv;
 using namespace std;
 
@@ -23,13 +20,13 @@ struct WordPos
 
 };
 //std::vector<vector<char>> sopaLetras
-struct WordSearch(std::vector<vector<char>>sopaLetras, int columns, int rows)
+struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 {
 	bool wordFound = false;
 	struct WordPos values;
 
 	cout<< "\n" << "Ingrese la palabra que está buscando en la sopa de letras" << "\n";
-	std::string palabra;
+	string palabra;
 	cin >> palabra;
 	cout << "\n" << "Está buscando la palabra: " << palabra << "\n";
 
@@ -39,23 +36,29 @@ struct WordSearch(std::vector<vector<char>>sopaLetras, int columns, int rows)
 	char caracteres(size - 1);
 	int pos = 0;
 
-	std::string checkWord;
+	string checkWord;
 
-	for (int i = 0; i <= columns; i++) {
-		for (int j = 0; j <= rows; j++) {
+	for (int i = 0; i <= columns; i++) 
+	{
+		for (int j = 0; j <= rows; j++) 
+		{
 			//encontramos la primera letra de la palabra que estamos buscando
-			if (palabra(pos) == sopaLetras(i)(j)) {
+			if (palabra[pos] == sopaLetras[i][j])
+			{
 				//comprobamos si la palabra entra en la dirección estimada
 				//de izquierda a derecha
-				if (size < columns - i) {
+				if (size < columns - i)
+				{
 					//si la palabra entra en la matriz, comprobamos 
 					//primero creamos string con los caracteres de esa dirección y para ese tamaño
-					for (int a = 0; a < size; a++) {
-						checkWord.push_back(sopaLetras(i + a)(j));
+					for (int a = 0; a < size; a++) 
+					{
+						checkWord.push_back(sopaLetras[i + a][j]);
 					}
 					//comprobación de la palabra, si es correcto, almacenamos posición, dirección y tamaño
-					int result = strcmp(checkWord, palabra);
-					if (result == 0) {
+					
+					if (checkWord.compare(palabra) == 0)
+					{
 						values.Xpos = i;
 						values.Ypos = j;
 						values.Xdir = 1;
@@ -66,13 +69,16 @@ struct WordSearch(std::vector<vector<char>>sopaLetras, int columns, int rows)
 					}
 				}
 				//comprobamos de derecha a izquierda
-				if (size <= i+1) {
-					for (int a = 0; a < size; a++) {
-						checkWord.push_back(sopaLetras(i - a)(j));
+				if (size <= i + 1)
+				{
+					for (int a = 0; a < size; a++)
+					{
+						checkWord.push_back(sopaLetras[i - a][j]);
 					}
 					//comprobación de la palabra, si es correcto, almacenamos posición, dirección y tamaño
-					int result = strcmp(checkWord, palabra);
-					if (result == 0) {
+					
+					if (checkWord.compare(palabra) == 0)
+					{
 						values.Xpos = i;
 						values.Ypos = j;
 						values.Xdir = -1;
@@ -83,15 +89,18 @@ struct WordSearch(std::vector<vector<char>>sopaLetras, int columns, int rows)
 					}
 				}
 				//de arriba a abajo
-				if (size < rows - j) {
+				if (size < rows - j) 
+				{
 					//si la palabra entra en la matriz, comprobamos 
 					//primero creamos string con los caracteres de esa dirección y para ese tamaño
-					for (int a = 0; a < size; a++) {
-						checkWord.push_back(sopaLetras(i)(j+a));
+					for (int a = 0; a < size; a++)
+					{
+						checkWord.push_back(sopaLetras[i][j + a]);
 					}
 					//comprobación de la palabra, si es correcto, almacenamos posición, dirección y tamaño
-					int result = strcmp(checkWord, palabra);
-					if (result == 0) {
+					
+					if (checkWord.compare(palabra) == 0)
+					{
 						values.Xpos = i;
 						values.Ypos = j;
 						values.Xdir = 0;
@@ -102,13 +111,16 @@ struct WordSearch(std::vector<vector<char>>sopaLetras, int columns, int rows)
 					}
 				}
 				//comprobamos de abajo a arriba
-				if (size <= j + 1) {
-					for (int a = 0; a < size; a++) {
-						checkWord.push_back(sopaLetras(i)(j-a));
+				if (size <= j + 1)
+				{
+					for (int a = 0; a < size; a++)
+					{
+						checkWord.push_back(sopaLetras[i][j - a]);
 					}
 					//comprobación de la palabra, si es correcto, almacenamos posición, dirección y tamaño
-					int result = strcmp(checkWord, palabra);
-					if (result == 0) {
+					
+					if (checkWord.compare(palabra) == 0)
+					{
 						values.Xpos = i;
 						values.Ypos = j;
 						values.Xdir = 0;
@@ -121,11 +133,12 @@ struct WordSearch(std::vector<vector<char>>sopaLetras, int columns, int rows)
 			}
 		}
 		//para salir del segundo for
-		if (wordFound) {
+		if (wordFound)
+		{
 			break;
 		}
+
 	}
 
-
 	return values;
-}
+};
