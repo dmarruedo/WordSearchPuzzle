@@ -2,9 +2,8 @@
 
 #include "opencv\cv.hpp"
 #include "opencv2\ml.hpp"
-#include "OCR.h"
 #include "WordSearchPuzzle.h"
-#include "Image.h"
+
 
 using namespace std;
 using namespace cv;
@@ -13,9 +12,9 @@ using namespace cv::ml;
 int ParameterSearch(void)
 {
 	// Read the image file
-	Mat image = imread("images/WordSearch.jpg", CV_8UC1);
-	Mat image1 = imread("images/WordSearch1.jpg", CV_8UC1);
-	Mat image2 = imread("images/WordSearch2.jpg", CV_8UC1);
+	Mat image = imread("images/sopafoto2.jpg", CV_8UC1);
+	Mat image1 = imread("images/sopafoto2.jpg", CV_8UC1);
+	Mat image2 = imread("images/sopafoto2.jpg", CV_8UC1);
 	// Check for failure
 	if (image.empty() || image1.empty() || image2.empty())
 	{
