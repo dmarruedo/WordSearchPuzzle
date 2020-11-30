@@ -27,10 +27,10 @@
     <ClCompile Include="ImageContour.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="WordSearchHelper.cpp">
+    <ClCompile Include="DataContour.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="DataContour.cpp">
+    <ClCompile Include="WordSearchHelper.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="WordSearch.cpp">
