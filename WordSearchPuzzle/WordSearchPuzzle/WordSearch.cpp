@@ -30,10 +30,10 @@ struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 	cin >> palabra;
 	cout << "\n" << "Está buscando la palabra: " << palabra << "\n";
 
-	int size;
-	size = palabra.length;
+	int wordLength;
+	wordLength = palabra.size();
 
-	char caracteres(size - 1);
+	char caracteres(wordLength - 1);
 	int pos = 0;
 
 	string checkWord;
@@ -47,11 +47,11 @@ struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 			{
 				//comprobamos si la palabra entra en la dirección estimada
 				//de izquierda a derecha
-				if (size < columns - i)
+				if (wordLength < columns - i)
 				{
 					//si la palabra entra en la matriz, comprobamos 
 					//primero creamos string con los caracteres de esa dirección y para ese tamaño
-					for (int a = 0; a < size; a++) 
+					for (int a = 0; a < wordLength; a++) 
 					{
 						checkWord.push_back(sopaLetras[i + a][j]);
 					}
@@ -63,15 +63,15 @@ struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 						values.Ypos = j;
 						values.Xdir = 1;
 						values.Ydir = 0;
-						values.wordSize = size;
+						values.wordSize = wordLength;
 						break;
 						wordFound = true;
 					}
 				}
 				//comprobamos de derecha a izquierda
-				if (size <= i + 1)
+				if (wordLength <= i + 1)
 				{
-					for (int a = 0; a < size; a++)
+					for (int a = 0; a < wordLength; a++)
 					{
 						checkWord.push_back(sopaLetras[i - a][j]);
 					}
@@ -83,17 +83,17 @@ struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 						values.Ypos = j;
 						values.Xdir = -1;
 						values.Ydir = 0;
-						values.wordSize = size;
+						values.wordSize = wordLength;
 						break;
 						wordFound = true;
 					}
 				}
 				//de arriba a abajo
-				if (size < rows - j) 
+				if (wordLength < rows - j) 
 				{
 					//si la palabra entra en la matriz, comprobamos 
 					//primero creamos string con los caracteres de esa dirección y para ese tamaño
-					for (int a = 0; a < size; a++)
+					for (int a = 0; a < wordLength; a++)
 					{
 						checkWord.push_back(sopaLetras[i][j + a]);
 					}
@@ -105,15 +105,15 @@ struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 						values.Ypos = j;
 						values.Xdir = 0;
 						values.Ydir = 1;
-						values.wordSize = size;
+						values.wordSize = wordLength;
 						break;
 						wordFound = true;
 					}
 				}
 				//comprobamos de abajo a arriba
-				if (size <= j + 1)
+				if (wordLength <= j + 1)
 				{
-					for (int a = 0; a < size; a++)
+					for (int a = 0; a < wordLength; a++)
 					{
 						checkWord.push_back(sopaLetras[i][j - a]);
 					}
@@ -125,7 +125,7 @@ struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 						values.Ypos = j;
 						values.Xdir = 0;
 						values.Ydir = -1;
-						values.wordSize = size;
+						values.wordSize = wordLength;
 						break;
 						wordFound = true;
 					}
