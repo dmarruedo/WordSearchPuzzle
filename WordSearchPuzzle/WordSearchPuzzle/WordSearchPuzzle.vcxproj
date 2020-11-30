@@ -159,7 +159,6 @@
     <ClCompile Include="ImageContour.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParameterSearch.cpp" />
-    <ClCompile Include="WordSearchHelper.cpp" />
     <ClCompile Include="WordSearchPuzzle.cpp" />
   </ItemGroup>
   <ItemGroup>
