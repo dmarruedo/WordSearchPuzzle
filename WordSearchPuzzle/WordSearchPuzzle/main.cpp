@@ -61,13 +61,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	for (auto fila = 0; fila < wordSearchMapChars.size(); fila++) {
-		for (int celda = 0; celda < wordSearchMapChars[fila].size(); celda++) {
-			cout << wordSearchMapChars[fila][celda] << " ";
-
-		}
-		cout << "\n";
-	}
+	
 
 
 
