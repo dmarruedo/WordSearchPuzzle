@@ -28,7 +28,7 @@ void WordSearchPuzzle::solve()
 		if (wordSolution.size() != 0)
 		{
 			solution.push_back(wordSolution);
-			cout << "Palabra " << words[i] << " encontrada \n";
+			cout << "Palabra " << words[i] << " encontrada entre la posicion (" <<  wordSolution[0].x << "," <<  wordSolution[0].y <<") y (" << wordSolution[wordSolution.size()-1].x << "," << wordSolution[wordSolution.size() - 1].y << ")\n";
 		}
 		else
 			cout << "Palabra " << words[i] << " NO encontrada \n";
