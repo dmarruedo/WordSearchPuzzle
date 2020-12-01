@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <ctime> 
 #include "WordSearchHelper.h"
 #include "WordSearchPuzzle.h"
 
@@ -22,6 +23,10 @@ const String IMGDIR = "images/sopafoto2.jpg";
 
 int main(int argc, char *argv[])
 {
+
+
+	unsigned t0, t1;
+	t0 = clock();
 
 	Mat originalImage = imread(IMGDIR, 0);
 	Mat resizeImage;
@@ -50,11 +55,14 @@ int main(int argc, char *argv[])
 	vector<vector<char>> wordSearchMapChars;
 	vector<char> rowChars;
 
+	Ptr<cv::ml::KNearest> KNearest= loadOCR();
+
+
 	for (int m = 1; m <= rows; m++) {
 		for (int n = 1; n <= cols; n++) {
 			Mat cell = extractCellImage(perspectiveImage, n, m, cellWidth, cellHeight, DEBUG_MODE);
 			imwrite("Celdas/Celda.jpg", cell);
-			char charOCR = OCR("Celdas/Celda.jpg", DEBUG_MODE);
+			char charOCR = OCR("Celdas/Celda.jpg", KNearest, DEBUG_MODE);
 			rowChars.push_back(charOCR);
 		}
 		wordSearchMapChars.push_back(rowChars);
@@ -90,6 +98,11 @@ int main(int argc, char *argv[])
 		roundsImage = roundWord(roundsImage, solution[i], rows, cols, cellWidth, cellHeight, DEBUG_MODE);
 	}
 	
+
+	t1 = clock();
+	double time = (double(t1 - t0) / CLOCKS_PER_SEC);
+	cout << "\n\nTiempo de ejecucion: " << time << endl;
+
 	//Muestra la sopa de letras resuelta
 	namedWindow("Solucion", CV_WINDOW_AUTOSIZE);
 	imshow("Solucion", roundsImage);

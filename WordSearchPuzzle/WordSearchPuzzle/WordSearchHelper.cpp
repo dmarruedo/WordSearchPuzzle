@@ -173,11 +173,7 @@ Mat cutOnPerspective(Mat image, ImageContour contour , bool SHOW_IMAGE) {
 
 
 
-char OCR(String image , bool DEBUG_MODE) {
-	vector<DataContour> allContoursWithData;           // declare empty vectors,
-	vector<DataContour> validContoursWithData;         // we will fill these shortly
-
-
+Ptr<cv::ml::KNearest> loadOCR() {
 
 	Mat matClassificationInts;      // we will read the classification numbers into this variable as though it is a vector
 
@@ -212,6 +208,16 @@ char OCR(String image , bool DEBUG_MODE) {
 																				// even though in reality they are multiple images / numbers
 
 	kNearest->train(matTrainingImagesAsFlattenedFloats, cv::ml::ROW_SAMPLE, matClassificationInts);
+
+	return kNearest;
+}
+
+char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
+	vector<DataContour> allContoursWithData;           // declare empty vectors,
+	vector<DataContour> validContoursWithData;         // we will fill these shortly
+
+
+
 
 	// TEST
 
