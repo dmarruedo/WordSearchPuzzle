@@ -30,6 +30,8 @@ void WordSearchPuzzle::solve()
 			solution.push_back(wordSolution);
 			cout << "Palabra " << words[i] << " encontrada \n";
 		}
+		else
+			cout << "Palabra " << words[i] << " NO encontrada \n";
 	}
 }
 
