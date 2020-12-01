@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
 	wordSearchMap.printConsole();
 
-	//wordSearchMap.solve();
+	wordSearchMap.solve();
 
 
 	return 1;
