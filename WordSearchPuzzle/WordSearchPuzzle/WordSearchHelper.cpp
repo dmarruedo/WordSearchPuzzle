@@ -4,7 +4,7 @@
 #include<opencv2/imgproc/imgproc.hpp>
 #include<opencv2/ml/ml.hpp>
 #include<sstream>
-
+#define PI 3.14159265
 
 vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
@@ -370,11 +370,15 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 	double coordY2 = (finalX*cellWidth + cellWidth / 2);
 	double coordX1 = (initialY*cellWidth + cellWidth / 2);
 	double coordX2 = (finalY*cellWidth + cellWidth / 2);
+	double red = rand() % 1;
+	int green = rand();
+	int blue = rand();
 
+	//sin el * red etc.. solo salen colores grises, con el * solo blancos¿?¿?¿?¿?
 	cv::Scalar color(
-		(double)std::rand() / RAND_MAX * 255,
-		(double)std::rand() / RAND_MAX * 255,
-		(double)std::rand() / RAND_MAX * 255
+		(double)std::rand() / RAND_MAX * 255 * red,
+		(double)std::rand() / RAND_MAX * 255 * green,
+		(double)std::rand() / RAND_MAX * 255 * blue
 	);
 
 	//Esta parte es para dibujar cuadrados
@@ -393,8 +397,12 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 
 	//Para dar diferentes colores a cada palabra
 	if (elipse) {
+		
+		//int desfaseY = pow(finalX/10 + finalY/10,2);
+		int desfaseY = finalX + finalY;
+
 		double centerX = (coordX1 + coordX2) / 2;
-		double centerY = (coordY1 + coordY2) / 2;
+		double centerY = (coordY1 + coordY2) / 2 - desfaseY; //el desfase parece aumentar cuanto más lejos del origen
 		cv::Point coordCenter(centerX, centerY);
 		int sizeX = wordSize * cellWidth / 2 + 10;
 		int sizeY = cellWidth / 2 + 3;
@@ -403,11 +411,11 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 			angle = 90;
 		}
 		else if (initX < endX & initY != endY) {
-			angle = 45;
+			angle = atan(cols / rows) * 180 / PI;
 			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 10;
-		}
-		else if (initX > endX & initY != endY) {
-			angle = 135;
+		}//no pilla este ángulo, no sé por qué
+		else if (initY < endY & initX != endX) {
+			angle = 360 - atan(cols / rows) * 180 / PI;
 			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 10;
 		}
 		Size axes(sizeX, sizeY);
