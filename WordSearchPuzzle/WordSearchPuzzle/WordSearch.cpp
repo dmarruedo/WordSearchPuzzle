@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include "opencv\cv.hpp"
 #include<sstream>
 
@@ -6,22 +6,22 @@
 #include<opencv2/highgui/highgui.hpp>
 #include<opencv2/imgproc/imgproc.hpp>
 #include<opencv2/ml/ml.hpp>
-
+#include "WordSearchHelper.h"
 using namespace cv;
 using namespace std;
 
-struct WordPos
-{
+/*struct WordPos{
 	int Xpos;
 	int Ypos;
 	int Xdir;
 	int Ydir;
 	int wordSize;
-
-};
-//std::vector<vector<char>> sopaLetras
-struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
+};*/
+/*
+void WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 {
+
+
 	bool wordFound = false;
 	struct WordPos values;
 
@@ -140,5 +140,11 @@ struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows)
 
 	}
 
-	return values;
-};
+	cout << "la palabra buscada es: " << palabra << "\n";
+	cout << "la palabra encontrada es: " << checkWord << "\n";
+	cout << "la primera letra se encuentra en: " << values.Xpos << values.Ypos << "\n";
+	cout << "con dirección: " << values.Xdir << values.Ydir << "\n";
+	cout << "y tamaño: " << values.wordSize << "\n";
+
+	return;
+};*/

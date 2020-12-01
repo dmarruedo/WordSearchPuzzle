@@ -26,4 +26,4 @@ int calculateCols(ImageContour wordSearchContour, ImageContour cellContour, doub
 Mat extractCellImage(Mat wordSearchImage, int row, int col, double cellWidth, double cellHeight, bool SHOW_IMAGE);
 Mat cutOnPerspective(Mat image, ImageContour contour , bool SHOW_IMAGE);
 char OCR(String image, bool SHOW_IMAGE);
-struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows);
+void WordSearch(vector<vector<char>>sopaLetras, int columns, int rows);
