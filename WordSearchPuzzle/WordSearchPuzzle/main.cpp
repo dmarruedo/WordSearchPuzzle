@@ -93,9 +93,11 @@ int main(int argc, char *argv[])
 
 	//bucle que va redondeando/pintando las palabras encontradas en la imagen de la sopa de letras , solution es un vector con las posiciones x(fila) e y(columna) de los caracateres encontrados para cada palabra
 	for (int i = 0;i< solution.size(); i++) {
+	//for (int i = 0; i < 1; i++) {
 
 		//la funcion roundWord esta sin codigo al final del archivo WordSearchHelper.cpp
 		roundsImage = roundWord(roundsImage, solution[i], rows, cols, cellWidth, cellHeight, DEBUG_MODE);
+	
 	}
 	
 

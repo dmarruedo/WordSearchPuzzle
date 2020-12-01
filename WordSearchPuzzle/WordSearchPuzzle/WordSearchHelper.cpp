@@ -5,6 +5,7 @@
 #include<opencv2/ml/ml.hpp>
 #include<sstream>
 
+
 vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 	Mat processedImage = Mat(image.size(), CV_8UC1);
@@ -324,8 +325,94 @@ char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, double cellWidth, double cellHeight, bool DEBUG_MODE)
 {
 	Mat roundImageOut = roundsImage.clone();
+	bool TEXT_MODE = false;
+	bool rectangulo = false;
+	bool elipse = true;
 
+	int initialX, initialY, finalX, finalY;
+	int wordSize = solution.size() - 1;
 
+	Point initial = solution[0];
+	int initX = initial.x;
+	int initY = initial.y;
+	
+	Point final = solution[wordSize];
+	int endX = final.x;
+	int endY = final.y;
+	if (TEXT_MODE){
+	cout << "\n point ini: " << solution[0] << endl;
+	cout << "\n point end: " << solution[wordSize] << endl;
+	cout << "\n pos initX: " << initX << "\n pos initY: " << initY << endl;
+	cout << "\n pos endX: " << endX << "\n pos endY: " << endY << endl;
+	cout << "\n word size: " << wordSize << endl;
+	}
+	//para añadir los anchos de celda de forma adecuada sin importar la dirección de la palabra
+	if (initX < endX) {
+		initialX = initX;
+		finalX = endX;
+	}
+	else {
+		initialX = endX;
+		finalX = initX;
+	}
+
+	if (initY < endY) {
+		initialY = initY;
+		finalY = endY;
+	}
+	else {
+		initialY = endY;
+		finalY = initY;
+	}
+
+	//Coordenadas del centro de la celda inicial y final
+	double coordY1 = (initialX*cellWidth + cellWidth / 2);
+	double coordY2 = (finalX*cellWidth + cellWidth / 2);
+	double coordX1 = (initialY*cellWidth + cellWidth / 2);
+	double coordX2 = (finalY*cellWidth + cellWidth / 2);
+
+	cv::Scalar color(
+		(double)std::rand() / RAND_MAX * 255,
+		(double)std::rand() / RAND_MAX * 255,
+		(double)std::rand() / RAND_MAX * 255
+	);
+
+	//Esta parte es para dibujar cuadrados
+	if (rectangulo){
+		cv::Point coordIni(coordX1, coordY1);
+		cv::Point coordFinal(coordX2, coordY2);
+		if (TEXT_MODE) {
+			cout << "\n coordenada X inicial: " << coordX1 << "\n coordenada Y inicial: " << coordY1 << endl;
+			cout << "\n coordenada X final: " << coordX2 << "\n coordenada Y final: " << coordY2 << endl;
+			cout << "\n Point ini: " << coordIni << endl;
+			cout << "\n Point final: " << coordFinal << endl;
+			rectangle(roundImageOut, coordIni, coordFinal, color, 2, LINE_8);
+		}
+	}
+	//Esta parte es para obtener el punto central de la elipse
+
+	//Para dar diferentes colores a cada palabra
+	if (elipse) {
+		double centerX = (coordX1 + coordX2) / 2;
+		double centerY = (coordY1 + coordY2) / 2;
+		cv::Point coordCenter(centerX, centerY);
+		int sizeX = wordSize * cellWidth / 2 + 10;
+		int sizeY = cellWidth / 2 + 3;
+		int angle=0;
+		if (initialY == finalY) {
+			angle = 90;
+		}
+		else if (initX < endX & initY != endY) {
+			angle = 45;
+			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 10;
+		}
+		else if (initX > endX & initY != endY) {
+			angle = 135;
+			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 10;
+		}
+		Size axes(sizeX, sizeY);
+		ellipse(roundImageOut, coordCenter, axes, angle, 0, 360, color, 2, LINE_8);
+	}
 	return roundImageOut;
 }
 
