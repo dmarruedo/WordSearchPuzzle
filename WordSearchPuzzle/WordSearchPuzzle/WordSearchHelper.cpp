@@ -315,3 +315,11 @@ char OCR(String image , bool DEBUG_MODE) {
 	return strFinalString[0];
 }
 
+Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, double cellWidth, double cellHeight, bool DEBUG_MODE)
+{
+	Mat roundImageOut = roundsImage.clone();
+
+
+	return roundImageOut;
+}
+

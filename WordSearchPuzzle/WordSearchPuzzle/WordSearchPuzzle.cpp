@@ -124,7 +124,7 @@ vector<Point> WordSearchPuzzle::lookNeighbours(Point pos, char foundCharacter) {
 			}
 		}
 		
-		if (pos.y != rows -1) {
+		if (pos.y != cols -1) {
 			char character = wordSearchMatrix[pos.x - 1][pos.y + 1];
 			if (character == foundCharacter) {
 				Point foundPos;
@@ -134,7 +134,7 @@ vector<Point> WordSearchPuzzle::lookNeighbours(Point pos, char foundCharacter) {
 			}
 		}
 	}
-	if (pos.x != cols -1) {
+	if (pos.x != rows -1) {
 
 		char character = wordSearchMatrix[pos.x + 1][pos.y];
 		if (character == foundCharacter) {
@@ -152,7 +152,7 @@ vector<Point> WordSearchPuzzle::lookNeighbours(Point pos, char foundCharacter) {
 				foundPosList.push_back(foundPos);
 			}
 		}
-		if (pos.y != rows-1) {
+		if (pos.y != cols-1) {
 			char character = wordSearchMatrix[pos.x + 1][pos.y + 1];
 			if (character == foundCharacter) {
 				Point foundPos;
@@ -172,7 +172,7 @@ vector<Point> WordSearchPuzzle::lookNeighbours(Point pos, char foundCharacter) {
 		}
 
 	}
-	if (pos.y != rows-1) {
+	if (pos.y != cols-1) {
 		char character = wordSearchMatrix[pos.x][pos.y + 1];
 		if (character == foundCharacter) {
 			Point foundPos;
@@ -217,35 +217,35 @@ Point WordSearchPuzzle::LookDirection(int direction, Point pos, char foundCharac
 			foundPos.y = pos.y;
 		}
 	}
-	if (direction == TOP_RIGHT && (pos.x != 0 && pos.y != rows-1)) {
+	if (direction == TOP_RIGHT && (pos.x != 0 && pos.y != cols-1)) {
 		char character = wordSearchMatrix[pos.x - 1][pos.y+1];
 		if (character == foundCharacter) {
 			foundPos.x = pos.x-1;
 			foundPos.y = pos.y+1;
 		}
 	}
-	if (direction == RIGHT && pos.y != rows-1) {
+	if (direction == RIGHT && pos.y != cols-1) {
 		char character = wordSearchMatrix[pos.x ][pos.y+1];
 		if (character == foundCharacter) {
 			foundPos.x = pos.x;
 			foundPos.y = pos.y+1;
 		}
 	}
-	if (direction == BOTTOM_RIGHT &&( pos.y != rows-1 && pos.x!=cols-1)) {
+	if (direction == BOTTOM_RIGHT &&( pos.y != cols-1 && pos.x!=rows-1)) {
 		char character = wordSearchMatrix[pos.x + 1][pos.y +1];
 		if (character == foundCharacter) {
 			foundPos.x = pos.x+1;
 			foundPos.y = pos.y+1;
 		}
 	}
-	if (direction == BOTTOM && pos.x != cols-1) {
+	if (direction == BOTTOM && pos.x != rows-1) {
 		char character = wordSearchMatrix[pos.x + 1][pos.y];
 		if (character == foundCharacter) {
 			foundPos.x = pos.x+1;
 			foundPos.y = pos.y;
 		}
 	}
-	if (direction == BOTTOM_LEFT && (pos.x != cols-1 && pos.y!=0)) {
+	if (direction == BOTTOM_LEFT && (pos.x != rows-1 && pos.y!=0)) {
 		char character = wordSearchMatrix[pos.x +1][pos.y-1];
 		if (character == foundCharacter) {
 			foundPos.x = pos.x+1;

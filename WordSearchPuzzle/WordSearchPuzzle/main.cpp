@@ -46,13 +46,13 @@ int main(int argc, char *argv[])
 	double cellWidth = extContour.getWidth() / cols;
 	double cellHeight = extContour.getHeight() / rows;
 
-	Mat perpectiveImage = cutOnPerspective(resizeImage, extContour, DEBUG_MODE);
+	Mat perspectiveImage = cutOnPerspective(resizeImage, extContour, DEBUG_MODE);
 	vector<vector<char>> wordSearchMapChars;
 	vector<char> rowChars;
 
 	for (int m = 1; m <= rows; m++) {
 		for (int n = 1; n <= cols; n++) {
-			Mat cell = extractCellImage(perpectiveImage, n, m, cellWidth, cellHeight, DEBUG_MODE);
+			Mat cell = extractCellImage(perspectiveImage, n, m, cellWidth, cellHeight, DEBUG_MODE);
 			imwrite("Celdas/Celda.jpg", cell);
 			char charOCR = OCR("Celdas/Celda.jpg", DEBUG_MODE);
 			rowChars.push_back(charOCR);
@@ -79,6 +79,23 @@ int main(int argc, char *argv[])
 	wordSearchMap.printConsole();
 
 	wordSearchMap.solve();
+
+	vector<vector<Point>> solution = wordSearchMap.getSolution();
+	Mat roundsImage = perspectiveImage.clone();
+
+	//bucle que va redondeando/pintando las palabras encontradas en la imagen de la sopa de letras , solution es un vector con las posiciones x(fila) e y(columna) de los caracateres encontrados para cada palabra
+	for (int i = 0;i< solution.size(); i++) {
+
+		//la funcion roundWord esta sin codigo al final del archivo WordSearchHelper.cpp
+		roundsImage = roundWord(roundsImage, solution[i], rows, cols, cellWidth, cellHeight, DEBUG_MODE);
+	}
+	
+	//Muestra la sopa de letras resuelta
+	namedWindow("Solucion", CV_WINDOW_AUTOSIZE);
+	imshow("Solucion", roundsImage);
+	waitKey(0);
+	destroyAllWindows();
+
 
 
 	return 1;
