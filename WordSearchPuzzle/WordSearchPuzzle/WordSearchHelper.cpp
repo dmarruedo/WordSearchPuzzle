@@ -240,7 +240,7 @@ char OCR(String image , bool DEBUG_MODE) {
 		destroyAllWindows();
 	}
 
-	adaptiveThreshold(matBlurred, matThresh, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 5, 7);
+	adaptiveThreshold(matBlurred, matThresh, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 5, 5);
 
 	Mat kernel;
 	kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
