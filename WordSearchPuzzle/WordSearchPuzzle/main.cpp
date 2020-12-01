@@ -65,12 +65,20 @@ int main(int argc, char *argv[])
 	vector<String> words;
 	words.push_back("CELDA");
 	words.push_back("NUMERO");
+	words.push_back("LIBRO");
+	words.push_back("RENGLON");
+	words.push_back("FUNCIONES");
+	words.push_back("FORMULA");
+	words.push_back("EXCEL");
+	words.push_back("GRAFICO");
+	words.push_back("MONEDA");
+	words.push_back("COLUMNA");
 
 	WordSearchPuzzle wordSearchMap(wordSearchMapChars, words);
 
 	wordSearchMap.printConsole();
 
-	//wordSearchMap.solve();
+	wordSearchMap.solve();
 
 
 	return 1;
