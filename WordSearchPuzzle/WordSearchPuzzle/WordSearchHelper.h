@@ -10,6 +10,15 @@ using namespace std;
 const int RESIZED_IMAGE_WIDTH = 20;
 const int RESIZED_IMAGE_HEIGHT = 30;
 
+struct WordPos
+{
+	int Xpos;
+	int Ypos;
+	int Xdir;
+	int Ydir;
+	int wordSize;
+
+};
 
 vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE);
 int calculateRows(ImageContour wordSearchContour, ImageContour cellContour, double error);
@@ -17,3 +26,4 @@ int calculateCols(ImageContour wordSearchContour, ImageContour cellContour, doub
 Mat extractCellImage(Mat wordSearchImage, int row, int col, double cellWidth, double cellHeight, bool SHOW_IMAGE);
 Mat cutOnPerspective(Mat image, ImageContour contour , bool SHOW_IMAGE);
 char OCR(String image, bool SHOW_IMAGE);
+struct WordPos WordSearch(vector<vector<char>>sopaLetras, int columns, int rows);
