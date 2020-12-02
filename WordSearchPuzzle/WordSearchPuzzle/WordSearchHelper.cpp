@@ -5,7 +5,7 @@
 #include<opencv2/ml/ml.hpp>
 #include<sstream>
 #define PI 3.14159265
-
+#define RAND_MAX 255
 vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 	Mat processedImage = Mat(image.size(), CV_8UC1);
@@ -122,7 +122,6 @@ int calculateCols(ImageContour wordSearchContour, ImageContour cellContour, doub
 
 }
 
-
 Mat extractCellImage(Mat wordSearchImage , int col, int row , double cellWidth , double cellHeight, bool SHOW_IMAGE) {
 		
 	Mat cellImage;
@@ -171,8 +170,6 @@ Mat cutOnPerspective(Mat image, ImageContour contour , bool SHOW_IMAGE) {
 
 	return perpectiveImage;
 }
-
-
 
 Ptr<cv::ml::KNearest> loadOCR() {
 
@@ -325,6 +322,7 @@ char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, double cellWidth, double cellHeight, bool DEBUG_MODE)
 {
 	Mat roundImageOut = roundsImage.clone();
+	cvtColor(roundsImage, roundsImage, CV_GRAY2RGB);
 	bool TEXT_MODE = false;
 	bool rectangulo = false;
 	bool elipse = true;
@@ -333,65 +331,90 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 	int wordSize = solution.size() - 1;
 
 	Point initial = solution[0];
-	int initX = initial.x;
-	int initY = initial.y;
-	
+	int initX = initial.y;
+	int initY = initial.x;
+
 	Point final = solution[wordSize];
-	int endX = final.x;
-	int endY = final.y;
-	if (TEXT_MODE){
-	cout << "\n point ini: " << solution[0] << endl;
-	cout << "\n point end: " << solution[wordSize] << endl;
-	cout << "\n pos initX: " << initX << "\n pos initY: " << initY << endl;
-	cout << "\n pos endX: " << endX << "\n pos endY: " << endY << endl;
-	cout << "\n word size: " << wordSize << endl;
+	int endX = final.y;
+	int endY = final.x;
+	if (TEXT_MODE) {
+		cout << "\n point ini: " << solution[0] << endl;
+		cout << "\n point end: " << solution[wordSize] << endl;
+		cout << "\n pos initX: " << initX << "\n pos initY: " << initY << endl;
+		cout << "\n pos endX: " << endX << "\n pos endY: " << endY << endl;
+		cout << "\n word size: " << wordSize << endl;
 	}
 	//para añadir los anchos de celda de forma adecuada sin importar la dirección de la palabra
+	//Establecemos que el punto inicial siempre es el que está mas a la izquierda
 	if (initX < endX) {
 		initialX = initX;
 		finalX = endX;
-	}
-	else {
-		initialX = endX;
-		finalX = initX;
-	}
-
-	if (initY < endY) {
 		initialY = initY;
 		finalY = endY;
 	}
 	else {
+		initialX = endX;
+		finalX = initX;
 		initialY = endY;
 		finalY = initY;
 	}
 
+	//desfase vertical para corregir altura
+	int desfaseY = finalX + finalY;
+
 	//Coordenadas del centro de la celda inicial y final
-	double coordY1 = (initialX*cellWidth + cellWidth / 2);
-	double coordY2 = (finalX*cellWidth + cellWidth / 2);
-	double coordX1 = (initialY*cellWidth + cellWidth / 2);
-	double coordX2 = (finalY*cellWidth + cellWidth / 2);
+	double coordX1 = (initialX*cellWidth + cellWidth / 2);
+	double coordX2 = (finalX*cellWidth + cellWidth / 2);
+	double coordY1 = (initialY*cellWidth + cellWidth / 2);
+	double coordY2 = (finalY*cellWidth + cellWidth / 2);
+
+	//Para que cambie cada iteración
+	/*std::srand(std::time(0));
 	double red = rand() % 1;
-	int green = rand();
-	int blue = rand();
+	double green = rand() % 1;
+	double blue = rand() % 1;*/
 
 	//sin el * red etc.. solo salen colores grises, con el * solo blancos¿?¿?¿?¿?
 	cv::Scalar color(
-		(double)std::rand() / RAND_MAX * 255 * red,
-		(double)std::rand() / RAND_MAX * 255 * green,
-		(double)std::rand() / RAND_MAX * 255 * blue
+		(int)std::rand() % 255,
+		(int)std::rand() % 255,
+		(int)std::rand() % 255
 	);
-
-	//Esta parte es para dibujar cuadrados
+	if (TEXT_MODE) {
+		cout << "\n" << color << endl;
+	}
+	//Esta parte es para dibujar cuadrados. No está acabado y cuadrarlo es complicado
 	if (rectangulo){
-		cv::Point coordIni(coordX1, coordY1);
-		cv::Point coordFinal(coordX2, coordY2);
+		//cv::Point coordIni(coordX1, coordY1);
+		//cv::Point coordFinal(coordX2, coordY2);
+		//Estos valores dependerán de la orientación de la palabra para colocar los vértices de forma correcta
+		int vX1, vX2, vY1, vY2;
+		
+		//HORIZONTAL
+		if (initialX == finalX) {
+			vX1 = -(cellWidth / 2 + 2);
+			vX2 = cellWidth / 2 + 2;
+			vY1 = -(cellHeight / 2 + 2) - desfaseY;
+			vY2 = cellHeight / 2 + 2 - desfaseY;
+		}//VERTICAL
+		else {
+			vX1 = -(cellHeight / 2 + 2);
+			vX2 = cellHeight / 2 + 2;
+			vY1 = -(cellWidth / 2 + 2) - desfaseY;
+			vY2 = cellWidth / 2 + 2 - desfaseY;
+		}
+
+
+		cv::Point verticeIzqSup(coordX1+vX1, coordY1+vY1);
+		cv::Point verticeDerInf(coordX2+vX2, coordY2+vY2);
+
 		if (TEXT_MODE) {
 			cout << "\n coordenada X inicial: " << coordX1 << "\n coordenada Y inicial: " << coordY1 << endl;
 			cout << "\n coordenada X final: " << coordX2 << "\n coordenada Y final: " << coordY2 << endl;
-			cout << "\n Point ini: " << coordIni << endl;
-			cout << "\n Point final: " << coordFinal << endl;
-			rectangle(roundImageOut, coordIni, coordFinal, color, 2, LINE_8);
+			cout << "\n Point ini: " << verticeIzqSup << endl;
+			cout << "\n Point final: " << verticeDerInf << endl;
 		}
+		rectangle(roundImageOut, verticeIzqSup, verticeDerInf, color, 2, LINE_8);
 	}
 	//Esta parte es para obtener el punto central de la elipse
 
@@ -399,27 +422,31 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 	if (elipse) {
 		
 		//int desfaseY = pow(finalX/10 + finalY/10,2);
-		int desfaseY = finalX + finalY;
+		double desfaseY = 2.5 * initialY + initialX/4;
 
 		double centerX = (coordX1 + coordX2) / 2;
 		double centerY = (coordY1 + coordY2) / 2 - desfaseY; //el desfase parece aumentar cuanto más lejos del origen
 		cv::Point coordCenter(centerX, centerY);
-		int sizeX = wordSize * cellWidth / 2 + 10;
-		int sizeY = cellWidth / 2 + 3;
-		int angle=0;
+		int sizeX = wordSize * cellWidth / 2 + 20;
+		int sizeY = cellWidth / 2 + 3 + wordSize/2;
+		int angle=90;
+
 		if (initialY == finalY) {
-			angle = 90;
+			angle = 0;
 		}
-		else if (initX < endX & initY != endY) {
-			angle = atan(cols / rows) * 180 / PI;
-			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 10;
+		else if (initialX == finalX) {
+			angle = 90;
 		}//no pilla este ángulo, no sé por qué
-		else if (initY < endY & initX != endX) {
-			angle = 360 - atan(cols / rows) * 180 / PI;
-			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 10;
+		else if (initialY > finalY & initialX != finalX) {
+			angle = 360 - atan(rows / cols) * 180 / PI;
+			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 20;
+		}
+		else if (initialY < finalY & initialX != finalX) {
+			angle = atan(rows / cols) * 180 / PI;
+			sizeX = wordSize * cellWidth * sqrt(2) / 2 + 20;
 		}
 		Size axes(sizeX, sizeY);
-		ellipse(roundImageOut, coordCenter, axes, angle, 0, 360, color, 2, LINE_8);
+		ellipse(roundImageOut, coordCenter, axes, angle, 0, 360, color, 2.5, LINE_8);
 	}
 	return roundImageOut;
 }

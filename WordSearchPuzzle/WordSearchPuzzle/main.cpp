@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
 	cout << "\n\nTiempo de ejecucion: " << time << endl;
 
 	//Muestra la sopa de letras resuelta
+	
 	namedWindow("Solucion", CV_WINDOW_AUTOSIZE);
 	imshow("Solucion", roundsImage);
 	waitKey(0);
