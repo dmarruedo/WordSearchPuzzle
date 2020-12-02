@@ -15,7 +15,7 @@ using namespace std;
 
 const bool DEBUG_MODE = false;
 const double SCALE = 0.25;
-const double LINE_WIDTH = 0.07;
+const double LINE_WIDTH = 0.1;
 
 
 const String IMGDIR = "images/sopafoto2.jpg";
@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
 
 	Ptr<cv::ml::KNearest> KNearest= loadOCR();
 
+	cout << "Se detectan: " << rows << " filas y "<< cols << " columnas \n\n";
 
 	for (int m = 1; m <= rows; m++) {
 		for (int n = 1; n <= cols; n++) {

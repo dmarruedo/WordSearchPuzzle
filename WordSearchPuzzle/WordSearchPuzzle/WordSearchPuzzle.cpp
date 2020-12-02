@@ -6,8 +6,8 @@ WordSearchPuzzle::WordSearchPuzzle(vector<vector<char>> wordSearchMatrix, vector
 {
 	this->wordSearchMatrix = wordSearchMatrix;
 	this->words = words;
-	this->rows = wordSearchMatrix[0].size();
-	this->cols = wordSearchMatrix.size();
+	this->cols = wordSearchMatrix[0].size();
+	this->rows = wordSearchMatrix.size();
 
 }
 
@@ -19,6 +19,7 @@ void WordSearchPuzzle::printConsole() {
 		}
 		cout << "\n";
 	}
+	cout << "\n\n";
 }
 
 void WordSearchPuzzle::solve()
@@ -41,8 +42,8 @@ vector<Point> WordSearchPuzzle::findWord(String word) {
 	vector<Point> foundWord;
 	char firstCharacter = word[0];
 	// Se va recorriendo la sopa de letras buscando coincidencias con la primera letra
-	for (int m = 0; m < rows; m++) {
-		for (int n = 0; n < cols; n++) {
+	for (int m = 0; m < rows-1; m++) {
+		for (int n = 0; n < cols-1; n++) {
 			// Si se encuentra una letra coincidente, se buscan en las posiciones vecinas coincidencias con la segunda letra
 			if (firstCharacter == wordSearchMatrix[m][n]) {
 				Point foundCharacter1;

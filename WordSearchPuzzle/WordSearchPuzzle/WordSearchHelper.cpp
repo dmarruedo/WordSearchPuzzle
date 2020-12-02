@@ -14,6 +14,13 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 	//Codigo para aplicacion de filtro Gausiano  
 	GaussianBlur(processedImage, processedImage, Size(5, 5), 0);
+	if (SHOW_IMAGE)
+	{
+		namedWindow("GaussianBlur", CV_WINDOW_AUTOSIZE);
+		imshow("Processed", processedImage);
+		waitKey(0);
+		destroyAllWindows();
+	}
 
 	//Codigo para aplicacion de filtro binario
 	adaptiveThreshold(processedImage, processedImage, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 9, 11);
@@ -33,7 +40,7 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 	if (SHOW_IMAGE)
 	{
-		namedWindow("Processed", CV_WINDOW_AUTOSIZE);
+		namedWindow("adaptiveThreshold", CV_WINDOW_AUTOSIZE);
 		imshow("Processed", processedImage);
 		waitKey(0);
 		destroyAllWindows();
@@ -111,14 +118,14 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 int calculateRows(ImageContour wordSearchContour , ImageContour cellContour , double error) {
 
-	int rows = wordSearchContour.getHeight() / (cellContour.getHeight() *(1 + error));
+	int rows = wordSearchContour.getHeight() / (cellContour.getHeight() *(1 + error))+0.5;
 	return rows;
 
 }
 
 int calculateCols(ImageContour wordSearchContour, ImageContour cellContour, double error) {
 
-	int cols = wordSearchContour.getWidth() / (cellContour.getWidth() *(1+error));
+	int cols = wordSearchContour.getWidth() / (cellContour.getWidth() *(1+error)) + 0.5;
 	return cols;
 
 }
