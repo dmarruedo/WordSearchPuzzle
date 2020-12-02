@@ -28,10 +28,13 @@ int main(int argc, char *argv[])
 	unsigned t0, t1;
 	t0 = clock();
 
-	Mat originalImage = imread(IMGDIR, 0);
+	Mat originalImage = imread(IMGDIR, IMREAD_COLOR);
+	
 	Mat resizeImage;
-	resize(originalImage, resizeImage, Size(originalImage.cols*SCALE, originalImage.rows*SCALE));
 
+	
+	resize(originalImage, resizeImage, Size(originalImage.cols*SCALE, originalImage.rows*SCALE));
+	
 
 
 	if (DEBUG_MODE)

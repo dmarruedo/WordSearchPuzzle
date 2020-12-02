@@ -9,10 +9,11 @@
 vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 	Mat processedImage = Mat(image.size(), CV_8UC1);
-	resize(processedImage, processedImage, Size(processedImage.cols*2, processedImage.rows*2));
+	cvtColor(image, processedImage, COLOR_BGR2GRAY);
+	//resize(processedImage, processedImage, Size(processedImage.cols*2, processedImage.rows*2));
 
 	//Codigo para aplicacion de filtro Gausiano  
-	GaussianBlur(image, processedImage, Size(5, 5), 0);
+	GaussianBlur(processedImage, processedImage, Size(5, 5), 0);
 
 	//Codigo para aplicacion de filtro binario
 	adaptiveThreshold(processedImage, processedImage, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 9, 11);
@@ -322,7 +323,7 @@ char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, double cellWidth, double cellHeight, bool DEBUG_MODE)
 {
 	Mat roundImageOut = roundsImage.clone();
-	cvtColor(roundsImage, roundsImage, CV_GRAY2RGB);
+
 	bool TEXT_MODE = false;
 	bool rectangulo = false;
 	bool elipse = true;
@@ -447,6 +448,7 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 		}
 		Size axes(sizeX, sizeY);
 		ellipse(roundImageOut, coordCenter, axes, angle, 0, 360, color, 2.5, LINE_8);
+
 	}
 	return roundImageOut;
 }
