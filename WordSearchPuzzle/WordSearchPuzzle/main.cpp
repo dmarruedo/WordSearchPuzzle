@@ -16,7 +16,7 @@ using namespace std;
 const bool DEBUG_MODE = false;
 
 
-const String IMGDIR = "images/sopafoto2.jpg";
+const String IMGDIR = "images/sopafoto3.jpg";
 //const String IMGDIR = "images/WordSearch1.jpg";
 
 int main(int argc, char *argv[])
@@ -85,16 +85,38 @@ int main(int argc, char *argv[])
 
 
 	vector<String> words;
-	words.push_back("CELDA");
-	words.push_back("NUMERO");
-	words.push_back("LIBRO");
-	words.push_back("RENGLON");
-	words.push_back("FUNCIONES");
-	words.push_back("FORMULA");
-	words.push_back("EXCEL");
-	words.push_back("GRAFICO");
-	words.push_back("MONEDA");
-	words.push_back("COLUMNA");
+
+	if (IMGDIR == "images/sopafoto2.jpg" || IMGDIR == "images/sopafoto6.jpg")
+	{
+		words.push_back("CELDA");
+		words.push_back("NUMERO");
+		words.push_back("LIBRO");
+		words.push_back("RENGLON");
+		words.push_back("FUNCIONES");
+		words.push_back("FORMULA");
+		words.push_back("EXCEL");
+		words.push_back("GRAFICO");
+		words.push_back("MONEDA");
+		words.push_back("COLUMNA");
+	}
+	else if (IMGDIR == "images/sopafoto1.jpg" || IMGDIR == "images/sopafoto3.jpg" || IMGDIR == "images/sopafoto5.jpg")
+	{
+		words.push_back("VISA");
+		words.push_back("ANIMACION");
+		words.push_back("AVIACION");
+		words.push_back("VACACIONES");
+		words.push_back("RECREACION");
+		words.push_back("VISITANTE");
+		words.push_back("CULTURA");
+		words.push_back("SUSTENTABLE");
+		words.push_back("VIAJERO");
+		words.push_back("PATRIMONIO");
+		words.push_back("EXCURSION");
+		words.push_back("PASAPORTE");
+		words.push_back("HOTELERIA");
+		words.push_back("ECOTURISMO");
+		words.push_back("CONGRESO");
+	}
 
 	WordSearchPuzzle wordSearchMap(wordSearchMapChars, words);
 
