@@ -23,18 +23,24 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 	}
 
 	//Codigo para aplicacion de filtro binario
-	adaptiveThreshold(processedImage, processedImage, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 9, 11);
+	adaptiveThreshold(processedImage, processedImage, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 9, 11);
+
+	//Canny(processedImage, processedImage, 50, 150);
 
 	//Codigo para invertir colores binarios 
-	bitwise_not(processedImage, processedImage);
+	//bitwise_not(processedImage, processedImage);
 
 	// Codigo para dilatar o erosionar la imagen binaria, no parece necesario de momento pero dejo el codigo por si acaso
+	
+	Mat kernel;
+	kernel = getStructuringElement(MORPH_RECT, Size(2, 2));
+	//dilate(processedImage, processedImage, kernel);
+	//erode(processedImage, processedImage, kernel);
 	/*
-	Mat kernel
-	kernel = getStructuringElement(MORPH_CROSS, Size(1, 1));
-	dilate(processedImage, processedImage, kernel);
-	kernel = getStructuringElement(MORPH_CROSS, Size(1, 1));
+	
+	kernel = getStructuringElement(MORPH_CROSS, Size(2, 2));
 	erode(processedImage, processedImage, kernel);
+	
 	*/
 
 
@@ -58,40 +64,40 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 	vector<vector<Point> > contours;
 	findContours(startImg, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 
-
+	// ordena los contornos de mayor a menos area
+	sort(contours.begin(), contours.end(), [](const vector<Point>& c1, const vector<Point>& c2) {
+		return contourArea(c1, false) > contourArea(c2, false);
+	});
 
 	//Se itera hasta encontrar en contorno de mayor area (p1) y el segundo de mayor area (p2), se filtra para que no busque en areas de menos de 25px (creo que son px)
 
-	double area; double maxArea1 = 0; double maxArea2 = 0; int p1; int p2;
+	double area; 
+	
 
+	vector<ImageContour> outContours;
+
+	// filtra los contornos de area menor a MIN_CELL_AREA
 	for (int i = 0; i < contours.size(); i++)
 	{
 		area = contourArea(contours[i], false);
-		if (area > 25)
+		if (area > MIN_CELL_AREA)
 		{
-			if (area > maxArea1)
-			{
-				maxArea2 = maxArea1;
-				maxArea1 = area;
-				p1 = i;
-			}
-			else if (area > maxArea2)
-			{
-				maxArea2 = area;
-				p2 = i;
-			}
+			ImageContour validContour(contours[i]);
+			outContours.push_back(validContour);
 		}
 	}
 
-	ImageContour extContour(contours[p1]);
-	ImageContour cellContour(contours[p2]);
-
+	
 	if (SHOW_IMAGE)
 	{
 		Mat contourImage = processedImage.clone();
 		cvtColor(contourImage, contourImage, COLOR_GRAY2BGR);
 
-		drawContours(contourImage, contours, p1, Scalar(255, 0, 0), 1, 8);
+		vector<vector<Point>> printContour;
+		printContour.push_back(outContours[0].getPoints());
+		drawContours(contourImage, printContour, 0, Scalar(255, 0, 0), 1, 8);
+		printContour.clear();
+
 		namedWindow("External Contour", CV_WINDOW_AUTOSIZE);
 		imshow("External Contour", contourImage);
 		waitKey(0);
@@ -100,16 +106,21 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 		contourImage = processedImage.clone();
 		cvtColor(contourImage, contourImage, COLOR_GRAY2BGR);
 
-		drawContours(contourImage, contours, p2, Scalar(255, 0, 0), 1, 8);
-		namedWindow("Cell Contour", CV_WINDOW_AUTOSIZE);
-		imshow("Cell Contour", contourImage);
+		for (int i = 1; i < outContours.size(); i++) {
+			printContour.push_back(outContours[i].getPoints());
+			drawContours(contourImage, printContour, 0, Scalar(255, 0, 0), 1, 8);
+			printContour.clear();
+		}
+		
+		namedWindow("Cell Contours", CV_WINDOW_AUTOSIZE);
+		imshow("Cell Contours", contourImage);
 		waitKey(0);
 		destroyAllWindows();
 	}
 
-	vector< ImageContour> outContours;
-	outContours.push_back(extContour);
-	outContours.push_back(cellContour);
+
+	//outContours.push_back(extContour);
+	//outContours.push_back(cellContour);
 
 	return outContours;
 
@@ -128,6 +139,27 @@ int calculateCols(ImageContour wordSearchContour, ImageContour cellContour, doub
 	int cols = wordSearchContour.getWidth() / (cellContour.getWidth() *(1+error)) + 0.5;
 	return cols;
 
+}
+
+
+Mat extractCellImage(Mat wordSearchImage, ImageContour cellContour, bool SHOW_IMAGE) {
+
+	Mat cellImage;
+	double cellHeight = cellContour.getHeight();
+	double cellWidth = cellContour.getWidth();
+	int x = cellContour.getPoints()[0].x;
+	int y = cellContour.getPoints()[0].y;
+	cellImage = Mat(wordSearchImage, Rect(x + 0.10*cellWidth,y + 0.10*cellWidth, cellWidth - 0.20*cellWidth, cellHeight - 0.20*cellWidth));
+	
+	// arrayCells[m][n] = cellImage;  Lo comento porque peta en ejecucion
+	if (SHOW_IMAGE)
+	{
+		namedWindow("Celda", CV_WINDOW_AUTOSIZE);
+		imshow("Celda", cellImage);
+		waitKey(0);
+		destroyAllWindows();
+	}
+	return cellImage;
 }
 
 Mat extractCellImage(Mat wordSearchImage , int col, int row , double cellWidth , double cellHeight, bool SHOW_IMAGE) {
@@ -218,7 +250,7 @@ Ptr<cv::ml::KNearest> loadOCR() {
 	return kNearest;
 }
 
-char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
+char OCR(Mat image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 	vector<DataContour> allContoursWithData;           // declare empty vectors,
 	vector<DataContour> validContoursWithData;         // we will fill these shortly
 
@@ -227,7 +259,7 @@ char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 
 	// TEST
 
-	Mat matTestingNumbers = imread(image);            // read in the test numbers image
+	Mat matTestingNumbers = image.clone();            // read in the test numbers image
 	resize(matTestingNumbers, matTestingNumbers, Size(matTestingNumbers.cols*2, matTestingNumbers.rows*2));
 
 	if (matTestingNumbers.empty()) {                                // if unable to open image
@@ -252,7 +284,7 @@ char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 		destroyAllWindows();
 	}
 
-	adaptiveThreshold(matBlurred, matThresh, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 5, 5);
+	adaptiveThreshold(matBlurred, matThresh, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 3, 5);
 
 	Mat kernel;
 	kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
@@ -325,6 +357,146 @@ char OCR(String image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 	}
 
 	return strFinalString[0];
+}
+
+Mat roundWord(Mat roundImageOut, vector<vector<ImageContour>> contourCellsMatriz , vector<Point> solution, bool DEBUG_MODE)
+{
+
+
+	bool TEXT_MODE = false;
+	bool rectangulo = false;
+	bool elipse = true;
+
+	int initialX, initialY, finalX, finalY;
+	int wordSize = solution.size() - 1;
+
+	Point initial = solution[0];
+	int initX = initial.x;
+	int initY = initial.y;
+
+	Point firstCharCentralPoint;
+	firstCharCentralPoint.x = (contourCellsMatriz[initX][initY].getPoints()[0].x + contourCellsMatriz[initX][initY].getPoints()[2].x) / 2;
+	firstCharCentralPoint.y = (contourCellsMatriz[initX][initY].getPoints()[0].y + contourCellsMatriz[initX][initY].getPoints()[2].y) / 2;
+
+	Point final = solution[wordSize];
+	int endX = final.x;
+	int endY = final.y;
+
+	Point LastCharCentralPoint;
+	LastCharCentralPoint.x = (contourCellsMatriz[endX][endY].getPoints()[0].x + contourCellsMatriz[endX][endY].getPoints()[2].x) / 2;
+	LastCharCentralPoint.y = (contourCellsMatriz[endX][endY].getPoints()[0].y + contourCellsMatriz[endX][endY].getPoints()[2].y) / 2;
+
+	int rows = contourCellsMatriz.size();
+	int cols = contourCellsMatriz[0].size();
+	double cellHeight = contourCellsMatriz[0][0].getHeight();
+	double cellWidth = contourCellsMatriz[0][0].getWidth();
+
+	Point verticeIzqSup;
+	Point verticeDerSup;
+	Point verticeDerInf;
+	Point verticeIzqInf;
+
+	if (solution[0].y == solution[wordSize].y && solution[0].x < solution[wordSize].x) {
+		//VERTICAL SENTIDO NORMAL
+		verticeIzqSup = contourCellsMatriz[initX][initY].getPoints()[0];
+		verticeDerSup = contourCellsMatriz[initX][initY].getPoints()[1];
+		verticeDerInf = contourCellsMatriz[endX][endY].getPoints()[2];
+		verticeIzqInf = contourCellsMatriz[endX][endY].getPoints()[3];
+	}
+
+	else if (solution[0].y == solution[wordSize].y && solution[0].x > solution[wordSize].x) {
+		//VERTICAL SENTIDO INVERTIDO
+		 verticeIzqSup = contourCellsMatriz[endX][endY].getPoints()[0];
+		 verticeDerSup =contourCellsMatriz[endX][endY].getPoints()[1];
+		 verticeDerInf =contourCellsMatriz[initX][initY].getPoints()[2];
+		 verticeIzqInf = contourCellsMatriz[initX][initY].getPoints()[3];
+	}
+
+	else if (solution[0].x == solution[wordSize].x && solution[0].y < solution[wordSize].y) {
+		//HORIZONTAL SENTIDO NORMAL
+		 verticeIzqSup = contourCellsMatriz[initX][initY].getPoints()[0];
+		 verticeDerSup = contourCellsMatriz[endX][endY].getPoints()[1];
+		 verticeDerInf = contourCellsMatriz[endX][endY].getPoints()[2];
+		 verticeIzqInf = contourCellsMatriz[initX][initY].getPoints()[3];
+	}
+	else if (solution[0].x == solution[wordSize].x && solution[0].y > solution[wordSize].y) {
+		//HORIZONTAL SENTIDO INVERTIDO
+		 verticeIzqSup = contourCellsMatriz[endX][endY].getPoints()[0];
+		 verticeDerSup = contourCellsMatriz[initX][initY].getPoints()[1];
+		 verticeDerInf = contourCellsMatriz[initX][initY].getPoints()[2];
+		 verticeIzqInf = contourCellsMatriz[endX][endY].getPoints()[3];
+
+	}
+	else if(solution[0].x > solution[wordSize].x && solution[0].y < solution[wordSize].y){
+		//DIAGONAL DERECHA ARRIBA SENTIDO NORMAL
+		 verticeIzqSup.y = contourCellsMatriz[endX][endY].getPoints()[0].y ;
+		 verticeIzqSup.x = contourCellsMatriz[endX][endY].getPoints()[0].x + cellHeight / 3;
+		 verticeDerSup.y = contourCellsMatriz[endX][endY].getPoints()[2].y - cellHeight / 3;
+		 verticeDerSup.x = contourCellsMatriz[endX][endY].getPoints()[2].x;
+		 verticeDerInf.y = contourCellsMatriz[initX][initY].getPoints()[2].y;
+		 verticeDerInf.x = contourCellsMatriz[initX][initY].getPoints()[2].x - cellHeight / 3;
+		 verticeIzqInf.y = contourCellsMatriz[initX][initY].getPoints()[0].y + cellHeight / 3;
+		 verticeIzqInf.x = contourCellsMatriz[initX][initY].getPoints()[0].x;
+
+	}
+	else if (solution[0].x < solution[wordSize].x && solution[0].y > solution[wordSize].y) {
+		//DIAGONAL DERECHA ARRIBA SENTIDO INVERTIDO
+		 verticeIzqSup.y = contourCellsMatriz[initX][initY].getPoints()[0].y;
+		 verticeIzqSup.x = contourCellsMatriz[initX][initY].getPoints()[0].x + cellHeight / 3;
+		 verticeDerSup.y = contourCellsMatriz[initX][initY].getPoints()[2].y - cellHeight / 3;
+		 verticeDerSup.x = contourCellsMatriz[initX][initY].getPoints()[2].x;
+		 verticeDerInf.y = contourCellsMatriz[endX][endY].getPoints()[2].y;
+		 verticeDerInf.x = contourCellsMatriz[endX][endY].getPoints()[2].x - cellHeight / 3;
+		 verticeIzqInf.y = contourCellsMatriz[endX][endY].getPoints()[0].y + cellHeight / 3;;
+		 verticeIzqInf.x = contourCellsMatriz[endX][endY].getPoints()[0].x;
+	}
+	else if(solution[0].x < solution[wordSize].x && solution[0].y < solution[wordSize].y) {
+		//DIAGONAL IZQUIERDA ARRIBA SENTIDO NORMAL
+		 verticeIzqSup.y = contourCellsMatriz[initX][initY].getPoints()[3].y - cellHeight / 3;
+		 verticeIzqSup.x = contourCellsMatriz[initX][initY].getPoints()[3].x;
+		 verticeDerSup.y = contourCellsMatriz[initX][initY].getPoints()[1].y;
+		 verticeDerSup.x = contourCellsMatriz[initX][initY].getPoints()[1].x - cellWidth / 3;
+		 verticeDerInf.y = contourCellsMatriz[endX][endY].getPoints()[1].y + cellHeight / 3;
+		 verticeDerInf.x = contourCellsMatriz[endX][endY].getPoints()[1].x;
+		 verticeIzqInf.y = contourCellsMatriz[endX][endY].getPoints()[3].y;
+		 verticeIzqInf.x = contourCellsMatriz[endX][endY].getPoints()[3].x + cellWidth / 3;
+	}
+	else if(solution[0].x > solution[wordSize].x && solution[0].y > solution[wordSize].y) {
+		//DIAGONAL IZQUIERDA ARRIBA SENTIDO INVERTIDO
+		 verticeIzqSup.y = contourCellsMatriz[endX][endY].getPoints()[3].y - cellHeight/3;
+		 verticeIzqSup.x = contourCellsMatriz[endX][endY].getPoints()[3].x ;
+		 verticeDerSup.y = contourCellsMatriz[endX][endY].getPoints()[1].y ;
+		 verticeDerSup.x = contourCellsMatriz[endX][endY].getPoints()[1].x - cellWidth / 3;
+		 verticeDerInf.y = contourCellsMatriz[initX][initY].getPoints()[1].y + cellHeight / 3;
+		 verticeDerInf.x = contourCellsMatriz[initX][initY].getPoints()[1].x;
+		 verticeIzqInf.y = contourCellsMatriz[initX][initY].getPoints()[3].y;
+		 verticeIzqInf.x = contourCellsMatriz[initX][initY].getPoints()[3].x + cellWidth / 3;
+	}
+
+	Scalar color(
+		(int)std::rand() % 255,
+		(int)std::rand() % 255, 
+		(int)std::rand() % 255
+	);
+
+	vector<Point> rectangle;
+	rectangle.push_back(verticeIzqSup);
+	rectangle.push_back(verticeDerSup);
+	rectangle.push_back(verticeDerInf);
+	rectangle.push_back(verticeIzqInf);
+
+		
+	polylines(roundImageOut, rectangle,true ,color, 2, LINE_8);
+
+	if (DEBUG_MODE)
+	{
+		namedWindow("roundImageOut", CV_WINDOW_AUTOSIZE);
+		imshow("roundImageOut", roundImageOut);
+		waitKey(0);
+		destroyAllWindows();
+	}
+
+	return roundImageOut;
 }
 
 Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, double cellWidth, double cellHeight, bool DEBUG_MODE)
@@ -460,3 +632,55 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 	return roundImageOut;
 }
 
+
+
+
+vector<vector<ImageContour>> orderCellContour(ImageContour extContour, vector<ImageContour> cellContours) {
+	
+	vector<ImageContour> cellContoursList = cellContours;
+	double minHeight= cellContoursList[0].getHeight();
+	double minWidth = cellContoursList[0].getWidth();
+	vector<vector<ImageContour>> cellContourMatrix;
+	vector<ImageContour> cellContourRow;
+
+	for (int i = 1; i < cellContoursList.size(); i++) {
+		if (cellContoursList[i].getHeight() < minHeight) {
+			minHeight = cellContoursList[i].getHeight();
+		}
+		if (cellContoursList[i].getWidth() < minWidth) {
+			minWidth = cellContoursList[i].getWidth();
+		}
+	}
+
+	
+	double limitY = extContour.getPoints()[0].y + minHeight;
+	int row = 0;
+
+	while (limitY < extContour.getPoints()[3].y) {
+		double limitX = extContour.getPoints()[0].x + minWidth;
+		while (limitX < extContour.getPoints()[1].x) {
+			for (int i = 0; i < cellContoursList.size(); i++) {
+				int x =  cellContoursList[i].getPoints()[1].x;
+					int y = cellContoursList[i].getPoints()[3].y;
+				if (cellContoursList[i].getPoints()[0].y <= limitY && cellContoursList[i].getPoints()[0].x < limitX) {
+					cellContourRow.push_back(cellContoursList[i]);
+					limitX = minWidth + cellContoursList[i].getPoints()[1].x;
+					cellContoursList.erase(cellContoursList.begin()+i);
+
+					//double width = cellContoursList[i].getWidth();
+					
+					break;
+				}
+			}
+		}
+		cellContourMatrix.push_back(cellContourRow);
+		limitY = minHeight + cellContourRow[0].getPoints()[3].y;
+		//limitX = extContour.getPoints()[0].x + minWidth;
+		cellContourRow.clear();
+		row = row + 1;
+	}
+
+	return cellContourMatrix;
+
+
+}
