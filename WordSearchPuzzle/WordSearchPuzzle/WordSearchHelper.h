@@ -9,7 +9,7 @@ using namespace std;
 
 const int RESIZED_IMAGE_WIDTH = 20;
 const int RESIZED_IMAGE_HEIGHT = 30;
-const int MIN_CELL_AREA = 400;
+const int MIN_CELL_AREA = 300;
 
 struct WordPos
 {

@@ -14,8 +14,6 @@ using namespace std;
 
 
 const bool DEBUG_MODE = false;
-const double SCALE = 0.25;
-const double LINE_WIDTH = 0.15;
 
 
 const String IMGDIR = "images/sopafoto2.jpg";
@@ -29,11 +27,18 @@ int main(int argc, char *argv[])
 	t0 = clock();
 
 	Mat originalImage = imread(IMGDIR, IMREAD_COLOR);
+
+	cout << "Imagen " << IMGDIR << " abierta \n\n";
 	
 	Mat resizeImage;
 
+	double scaleY = 1000 / (double) originalImage.rows;
+	double scaleX = 1000 / (double) originalImage.rows;
+
+	double scale = min(scaleY, scaleX);
+
 	
-	resize(originalImage, resizeImage, Size(originalImage.cols*SCALE, originalImage.rows*SCALE));
+	resize(originalImage, resizeImage, Size(originalImage.cols*scale, originalImage.rows*scale));
 	
 
 
@@ -47,6 +52,8 @@ int main(int argc, char *argv[])
 
 	vector<ImageContour> wordSearchContours = findWordSearhContours(resizeImage, DEBUG_MODE);
 	ImageContour extContour = wordSearchContours[0];
+
+	cout << "Contorno detectados";
 	
 	wordSearchContours.erase(wordSearchContours.begin());
 	vector<ImageContour> cellContours = wordSearchContours;

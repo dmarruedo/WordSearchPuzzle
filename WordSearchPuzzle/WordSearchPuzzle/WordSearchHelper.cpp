@@ -13,7 +13,7 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 	//resize(processedImage, processedImage, Size(processedImage.cols*2, processedImage.rows*2));
 
 	//Codigo para aplicacion de filtro Gausiano  
-	GaussianBlur(processedImage, processedImage, Size(5, 5), 0);
+	GaussianBlur(processedImage, processedImage, Size(3, 3), 0);
 	if (SHOW_IMAGE)
 	{
 		namedWindow("GaussianBlur", CV_WINDOW_AUTOSIZE);
@@ -653,31 +653,55 @@ vector<vector<ImageContour>> orderCellContour(ImageContour extContour, vector<Im
 	}
 
 	
-	double limitY = extContour.getPoints()[0].y + minHeight;
+	
 	int row = 0;
 
-	while (limitY < extContour.getPoints()[3].y) {
-		double limitX = extContour.getPoints()[0].x + minWidth;
-		while (limitX < extContour.getPoints()[1].x) {
+	bool findHorizontal = true;
+	bool findVertical = true;
+
+	double limitX = extContour.getPoints()[0].x + minWidth / 2;
+	double limitY = extContour.getPoints()[0].y + minHeight / 2;
+
+	while (findVertical) {
+		
+		while (findHorizontal) {
 			for (int i = 0; i < cellContoursList.size(); i++) {
-				int x =  cellContoursList[i].getPoints()[1].x;
-					int y = cellContoursList[i].getPoints()[3].y;
+				//int x =  cellContoursList[i].getPoints()[1].x;
+				//int y =  cellContoursList[i].getPoints()[3].y;
 				if (cellContoursList[i].getPoints()[0].y <= limitY && cellContoursList[i].getPoints()[0].x < limitX) {
 					cellContourRow.push_back(cellContoursList[i]);
-					limitX = minWidth + cellContoursList[i].getPoints()[1].x;
+					limitX = minWidth/2 + cellContoursList[i].getPoints()[1].x;
+					limitY = minHeight / 2 + cellContoursList[i].getPoints()[1].y;
 					cellContoursList.erase(cellContoursList.begin()+i);
+					findHorizontal = true;
+					findVertical = true;
 
 					//double width = cellContoursList[i].getWidth();
 					
 					break;
 				}
+				else if (cellContoursList[i].getPoints()[0].y < limitY) {
+					findVertical = false;
+				}
+				else if (cellContoursList[i].getPoints()[0].x < limitX) {
+					findHorizontal = false;
+				}
+			}
+			if (cellContoursList.size() == 0) {
+				findVertical = false;
+				findHorizontal = false;
 			}
 		}
 		cellContourMatrix.push_back(cellContourRow);
-		limitY = minHeight + cellContourRow[0].getPoints()[3].y;
+		limitY = minHeight/2 + cellContourRow[0].getPoints()[3].y;
+		limitX = minWidth /2 + cellContourRow[0].getPoints()[3].x;
 		//limitX = extContour.getPoints()[0].x + minWidth;
 		cellContourRow.clear();
 		row = row + 1;
+		findHorizontal = true;
+
+		
+		
 	}
 
 	return cellContourMatrix;
