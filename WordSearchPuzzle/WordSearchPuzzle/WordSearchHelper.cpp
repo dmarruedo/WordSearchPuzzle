@@ -149,7 +149,7 @@ Mat extractCellImage(Mat wordSearchImage, ImageContour cellContour, bool SHOW_IM
 	double cellWidth = cellContour.getWidth();
 	int x = cellContour.getPoints()[0].x;
 	int y = cellContour.getPoints()[0].y;
-	cellImage = Mat(wordSearchImage, Rect(x + 0.10*cellWidth,y + 0.10*cellWidth, cellWidth - 0.20*cellWidth, cellHeight - 0.20*cellWidth));
+	cellImage = Mat(wordSearchImage, Rect(x + 0.10*cellWidth,y + 0.10*cellWidth, cellWidth - 0.10*cellWidth, cellHeight - 0.10*cellWidth));
 	
 	// arrayCells[m][n] = cellImage;  Lo comento porque peta en ejecucion
 	if (SHOW_IMAGE)
