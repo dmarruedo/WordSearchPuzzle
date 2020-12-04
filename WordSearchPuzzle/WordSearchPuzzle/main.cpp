@@ -16,7 +16,7 @@ using namespace std;
 const bool DEBUG_MODE = false;
 
 
-const String IMGDIR = "images/sopafoto3.jpg";
+const String IMGDIR = "images/sopafoto8.jpg";
 //const String IMGDIR = "images/WordSearch1.jpg";
 
 int main(int argc, char *argv[])
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 		words.push_back("MONEDA");
 		words.push_back("COLUMNA");
 	}
-	else if (IMGDIR == "images/sopafoto1.jpg" || IMGDIR == "images/sopafoto3.jpg" || IMGDIR == "images/sopafoto5.jpg")
+	else if (IMGDIR == "images/sopafoto1.jpg" || IMGDIR == "images/sopafoto3.jpg" || IMGDIR == "images/sopafoto5.jpg" || IMGDIR == "images/sopafoto7.jpg" || IMGDIR == "images/sopafoto8.jpg")
 	{
 		words.push_back("VISA");
 		words.push_back("ANIMACION");
