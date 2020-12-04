@@ -16,8 +16,8 @@ using namespace std;
 const bool DEBUG_MODE = false;
 
 
-const String IMGDIR = "images/sopafoto8.jpg";
-//const String IMGDIR = "images/WordSearch1.jpg";
+//const String IMGDIR = "images/WordSearchPuzzle1.jpg";
+const String IMGDIR = "images/WordSearchPuzzle2.jpg";
 
 int main(int argc, char *argv[])
 {
@@ -28,7 +28,48 @@ int main(int argc, char *argv[])
 
 	Mat originalImage = imread(IMGDIR, IMREAD_COLOR);
 
+	if (originalImage.empty()) {                                
+		cout << "error: no se puede abrir la imagen : " << IMGDIR << "\n\n";
+		return 1;// 
+
+	}
+
+
 	cout << "Imagen " << IMGDIR << " abierta \n\n";
+
+	vector<String> words;
+
+	if (IMGDIR == "images/WordSearchPuzzle1.jpg")
+	{
+		words.push_back("CELDA");
+		words.push_back("NUMERO");
+		words.push_back("LIBRO");
+		words.push_back("RENGLON");
+		words.push_back("FUNCIONES");
+		words.push_back("FORMULA");
+		words.push_back("EXCEL");
+		words.push_back("GRAFICO");
+		words.push_back("MONEDA");
+		words.push_back("COLUMNA");
+	}
+	else if (IMGDIR == "images/WordSearchPuzzle2.jpg")
+	{
+		words.push_back("VISA");
+		words.push_back("ANIMACION");
+		words.push_back("AVIACION");
+		words.push_back("VACACIONES");
+		words.push_back("RECREACION");
+		words.push_back("VISITANTE");
+		words.push_back("CULTURA");
+		words.push_back("SUSTENTABLE");
+		words.push_back("VIAJERO");
+		words.push_back("PATRIMONIO");
+		words.push_back("EXCURSION");
+		words.push_back("PASAPORTE");
+		words.push_back("HOSTELERIA");
+		words.push_back("ECOTURISMO");
+		words.push_back("CONGRESO");
+	}
 	
 	Mat resizeImage;
 
@@ -53,7 +94,7 @@ int main(int argc, char *argv[])
 	vector<ImageContour> wordSearchContours = findWordSearhContours(resizeImage, DEBUG_MODE);
 	ImageContour extContour = wordSearchContours[0];
 
-	cout << "Contorno detectados";
+	cout << "Contorno detectados \n\n";
 	
 	wordSearchContours.erase(wordSearchContours.begin());
 	vector<ImageContour> cellContours = wordSearchContours;
@@ -84,39 +125,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	vector<String> words;
 
-	if (IMGDIR == "images/sopafoto2.jpg" || IMGDIR == "images/sopafoto6.jpg")
-	{
-		words.push_back("CELDA");
-		words.push_back("NUMERO");
-		words.push_back("LIBRO");
-		words.push_back("RENGLON");
-		words.push_back("FUNCIONES");
-		words.push_back("FORMULA");
-		words.push_back("EXCEL");
-		words.push_back("GRAFICO");
-		words.push_back("MONEDA");
-		words.push_back("COLUMNA");
-	}
-	else if (IMGDIR == "images/sopafoto1.jpg" || IMGDIR == "images/sopafoto3.jpg" || IMGDIR == "images/sopafoto5.jpg" || IMGDIR == "images/sopafoto7.jpg" || IMGDIR == "images/sopafoto8.jpg")
-	{
-		words.push_back("VISA");
-		words.push_back("ANIMACION");
-		words.push_back("AVIACION");
-		words.push_back("VACACIONES");
-		words.push_back("RECREACION");
-		words.push_back("VISITANTE");
-		words.push_back("CULTURA");
-		words.push_back("SUSTENTABLE");
-		words.push_back("VIAJERO");
-		words.push_back("PATRIMONIO");
-		words.push_back("EXCURSION");
-		words.push_back("PASAPORTE");
-		words.push_back("HOTELERIA");
-		words.push_back("ECOTURISMO");
-		words.push_back("CONGRESO");
-	}
 
 	WordSearchPuzzle wordSearchMap(wordSearchMapChars, words);
 
@@ -150,6 +159,8 @@ int main(int argc, char *argv[])
 
 	//Guarda la imagen con la sopa de letras resuelta
 	imwrite("images/WordSearchPuzzleSolucion.jpg", roundsImage);
+
+	cout << "Solcuion guardada en images/WordSearchPuzzleSolucion.jpg";
 
 
 	return 1;
