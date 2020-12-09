@@ -13,7 +13,7 @@ using namespace cv;
 using namespace std;
 
 
-const bool DEBUG_MODE = false;
+const bool DEBUG_MODE = true;
 
 
 //const String IMGDIR = "images/WordSearchPuzzle1.jpg";
@@ -112,12 +112,18 @@ int main(int argc, char *argv[])
 
 	Ptr<cv::ml::KNearest> KNearest= loadOCR();
 
-	
+	bool debug = false;
 
 	for (int m = 0; m < rows; m++) {
 		for (int n = 0; n < cols; n++) {
-			Mat cell = extractCellImage(resizeImage, cellContourMatrix[m][n],false);
-			char charOCR = OCR(cell, KNearest, false);
+			if (DEBUG_MODE && m==0 && n < 2) {
+				debug = true;
+			}
+			else {
+				debug = false;
+			}			
+			Mat cell = extractCellImage(resizeImage, cellContourMatrix[m][n], debug);
+			char charOCR = OCR(cell, KNearest, debug);
 			rowChars.push_back(charOCR);
 		}
 		wordSearchMapChars.push_back(rowChars);
@@ -151,7 +157,7 @@ int main(int argc, char *argv[])
 	
 	//Muestra la sopa de letras resuelta
 	
-	Mat perspectiveImage = cutOnPerspective(resizeImage, extContour, DEBUG_MODE);
+	Mat perspectiveImage = cutOnPerspective(resizeImage, extContour, false);
 	namedWindow("Solucion", CV_WINDOW_AUTOSIZE);
 	imshow("Solucion", perspectiveImage);
 	waitKey(0);

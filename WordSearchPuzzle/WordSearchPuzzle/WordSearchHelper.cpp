@@ -17,7 +17,7 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 	if (SHOW_IMAGE)
 	{
 		namedWindow("GaussianBlur", CV_WINDOW_AUTOSIZE);
-		imshow("Processed", processedImage);
+		imshow("GaussianBlur", processedImage);
 		waitKey(0);
 		destroyAllWindows();
 	}
@@ -47,7 +47,7 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 	if (SHOW_IMAGE)
 	{
 		namedWindow("adaptiveThreshold", CV_WINDOW_AUTOSIZE);
-		imshow("Processed", processedImage);
+		imshow("adaptiveThreshold", processedImage);
 		waitKey(0);
 		destroyAllWindows();
 	}
@@ -62,7 +62,7 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 	//almacena en el vector contours los vertices de cada uno de los contorno encontrados
 
 	vector<vector<Point> > contours;
-	findContours(startImg, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+	findContours(startImg, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 
 	// ordena los contornos de mayor a menos area
 	sort(contours.begin(), contours.end(), [](const vector<Point>& c1, const vector<Point>& c2) {
@@ -278,8 +278,8 @@ char OCR(Mat image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 	GaussianBlur(matGrayscale, matBlurred, Size(3, 3), 0);
 	if (DEBUG_MODE)
 	{
-		namedWindow("matBlurred", CV_WINDOW_AUTOSIZE);
-		imshow("matBlurred", matBlurred);
+		namedWindow("Scaled GaussianBlur character", CV_WINDOW_AUTOSIZE);
+		imshow("Scaled GaussianBlur character", matBlurred);
 		waitKey(0);
 		destroyAllWindows();
 	}
@@ -294,8 +294,8 @@ char OCR(Mat image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 
 	if (DEBUG_MODE)
 	{
-		namedWindow("matThresh", CV_WINDOW_AUTOSIZE);
-		imshow("matThresh", matThreshCopy);
+		namedWindow("Threshold character", CV_WINDOW_AUTOSIZE);
+		imshow("Threshold character", matThreshCopy);
 		waitKey(0);
 		destroyAllWindows();
 	}
@@ -321,13 +321,15 @@ char OCR(Mat image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 
 	string strFinalString;         // declare final string, this will have the final number sequence by the end of the program
 
+	Mat matROIResized;
+
 	for (int i = 0; i < validContoursWithData.size(); i++) {            // for each contour
 
 		rectangle(matTestingNumbers, validContoursWithData[i].getBoundingRect(), Scalar(0, 255, 0), 2);
 
 		Mat matROI = matThresh(validContoursWithData[i].getBoundingRect());          // get ROI image of bounding rect
 
-		Mat matROIResized;
+		//Mat matROIResized;
 		resize(matROI, matROIResized, Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));     // resize image, this will be more consistent for recognition and storage
 
 		Mat matROIFloat;
@@ -348,12 +350,22 @@ char OCR(Mat image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 
 	if (DEBUG_MODE)
 	{
-		cout << "\n\n" << "numbers read = " << strFinalString << "\n\n";       // show the full string
+		      // show the full string
 
-		imshow("matTestingNumbers", matTestingNumbers);     // show input image with green boxes drawn around found digits
+		namedWindow("bounding character", CV_WINDOW_AUTOSIZE);
+		imshow("bounding character", matTestingNumbers);     // show input image with green boxes drawn around found digits
 
 		waitKey(0);
+		destroyAllWindows();
 		// wait for user key press
+
+		namedWindow("OCR image", CV_WINDOW_AUTOSIZE);
+		imshow("OCR image", matROIResized);     // show input image with green boxes drawn around found digits
+
+		waitKey(0);
+		destroyAllWindows();
+
+		cout << "\n\n" << "numbers read = " << strFinalString << "\n\n";
 	}
 
 	return strFinalString[0];
