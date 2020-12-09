@@ -6,6 +6,7 @@
 #include<sstream>
 #define PI 3.14159265
 #define RAND_MAX 255
+
 vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 	Mat processedImage = Mat(image.size(), CV_8UC1);
@@ -95,7 +96,7 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 		vector<vector<Point>> printContour;
 		printContour.push_back(outContours[0].getPoints());
-		drawContours(contourImage, printContour, 0, Scalar(255, 0, 0), 1, 8);
+		drawContours(contourImage, printContour, 0, Scalar(0, 0, 255), 2, 8);
 		printContour.clear();
 
 		namedWindow("External Contour", CV_WINDOW_AUTOSIZE);
@@ -108,7 +109,7 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 		for (int i = 1; i < outContours.size(); i++) {
 			printContour.push_back(outContours[i].getPoints());
-			drawContours(contourImage, printContour, 0, Scalar(255, 0, 0), 1, 8);
+			drawContours(contourImage, printContour, 0, Scalar(0, 0, 255), 2, 8);
 			printContour.clear();
 		}
 		
@@ -126,7 +127,6 @@ vector<ImageContour> findWordSearhContours(Mat image, bool SHOW_IMAGE) {
 
 }
 
-
 int calculateRows(ImageContour wordSearchContour , ImageContour cellContour , double error) {
 
 	int rows = wordSearchContour.getHeight() / (cellContour.getHeight() *(1 + error))+0.5;
@@ -140,7 +140,6 @@ int calculateCols(ImageContour wordSearchContour, ImageContour cellContour, doub
 	return cols;
 
 }
-
 
 Mat extractCellImage(Mat wordSearchImage, ImageContour cellContour, bool SHOW_IMAGE) {
 
@@ -365,7 +364,7 @@ char OCR(Mat image , Ptr<cv::ml::KNearest> kNearest,bool DEBUG_MODE) {
 		waitKey(0);
 		destroyAllWindows();
 
-		cout << "\n\n" << "numbers read = " << strFinalString << "\n\n";
+		cout << "\n\n" << "letra captada = " << strFinalString << "\n\n";
 	}
 
 	return strFinalString[0];
@@ -643,9 +642,6 @@ Mat roundWord(Mat roundsImage, vector<Point> solution, int rows, int cols, doubl
 	}
 	return roundImageOut;
 }
-
-
-
 
 vector<vector<ImageContour>> orderCellContour(ImageContour extContour, vector<ImageContour> cellContours) {
 	
